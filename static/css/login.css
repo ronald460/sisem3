@@ -1,0 +1,263 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.login-wrapper {
+  max-width: 440px;
+  width: 100%;
+}
+
+/* Tarjeta principal con sombra suave */
+.login-card {
+  background: white;
+  border-radius: 32px;
+  box-shadow:
+    0 20px 40px -10px rgba(0, 0, 0, 0.08),
+    0 8px 20px -8px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem 2rem;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+/* Contenedor del logo */
+.logo-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-container img {
+  max-width: 180px;
+  height: auto;
+  display: inline-block;
+}
+
+/* Si no tienes logo, este es un placeholder con iniciales */
+.logo-placeholder {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, #f0f4ff, #e6ecfe);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+}
+
+.logo-placeholder span {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.company-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin-top: 0.5rem;
+}
+
+/* Formulario */
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 0.5rem;
+}
+
+.input-label i {
+  color: #4f46e5;
+  font-size: 1rem;
+}
+
+.input-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-field i {
+  position: absolute;
+  left: 1rem;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 2.8rem;
+  font-size: 0.95rem;
+  background-color: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 18px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.input-field input:focus {
+  border-color: #4f46e5;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.input-field input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+/* Checkbox personalizado */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0 1.8rem 0;
+  cursor: pointer;
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 1.2rem;
+  height: 1.2rem;
+  accent-color: #4f46e5;
+  cursor: pointer;
+}
+
+.checkbox-container span {
+  font-size: 0.95rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+/* Botón de login */
+.btn-login {
+  width: 100%;
+  padding: 1rem;
+  background: #4f46e5;
+  border: none;
+  border-radius: 18px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1.8rem;
+  box-shadow: 0 8px 18px -6px rgba(79, 70, 229, 0.3);
+}
+
+.btn-login i {
+  font-size: 1.1rem;
+}
+
+.btn-login:hover {
+  background: #4338ca;
+  transform: scale(1.02);
+  box-shadow: 0 12px 24px -8px rgba(79, 70, 229, 0.4);
+}
+
+.btn-login:active {
+  transform: scale(0.98);
+}
+
+/* Enlace de olvidé contraseña */
+.forgot-password {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.forgot-password a {
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: color 0.2s;
+}
+
+.forgot-password a i {
+  font-size: 0.8rem;
+}
+
+.forgot-password a:hover {
+  color: #4f46e5;
+}
+
+/* Versión del sistema */
+.system-version {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.version-badge {
+  background: #f1f5f9;
+  padding: 0.5rem 1.2rem;
+  border-radius: 40px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1e293b;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.version-badge i {
+  color: #4f46e5;
+  font-size: 1rem;
+}
+
+.version-badge span {
+  background: #4f46e5;
+  color: white;
+  padding: 0.2rem 0.6rem;
+  border-radius: 30px;
+  font-size: 0.75rem;
+  margin-left: 0.3rem;
+}
+
+/* Línea divisora */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  margin: 1.5rem 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+}
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+}
