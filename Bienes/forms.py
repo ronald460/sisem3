@@ -19,18 +19,5 @@ class addBien_form(forms.ModelForm):
         }
     
     def __init__(self, *args, **kwargs):
-        usuario = kwargs.pop('usuario', None)
         super().__init__(*args, **kwargs)
-        
-        if usuario:
-            if usuario.is_superuser:
-                # Admin ve todos los empleados
-                self.fields['id_worker'].queryset = Empleado.objects.all()
-            else:
-                # Usuario normal ve solo empleados de su área
-                responsable = encargado_bienes.objects.filter(id_worker=usuario).first()
-                if responsable:
-                    self.fields['id_worker'].queryset = Empleado.objects.filter(area=responsable.area)
-                else:
-                    self.fields['id_worker'].queryset = Empleado.objects.none()
 

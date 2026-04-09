@@ -54,6 +54,8 @@ db.sqlite3-journal
 # Archivos de configuración local y secreta. ¡MUY IMPORTANTE!
 # Aquí guardarás tu SECRET_KEY, claves de API, etc.
 local_settings.py
+*.local.py
+settings_local.py
 .env
 secrets.json
 

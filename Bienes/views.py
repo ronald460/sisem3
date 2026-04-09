@@ -27,11 +27,14 @@ def lista_bienes(request):
 @login_required
 def add_bien(request, id):
 
-
     empleados = get_empleados_por_area_usuario(request.user)
     bien_fisico = get_object_or_404(Bienes, id=id)
     responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
     
+    is_juridico = False
+
+    if responsable and responsable.area.name == "Juridico":
+        is_juridico = True
 
     if request.user.is_superuser:
         empleados = Empleado.objects.all()
@@ -41,10 +44,15 @@ def add_bien(request, id):
             empleados = Empleado.objects.filter(area=responsable.area)  # Solo su área
         else:
             empleados = Empleado.objects.none()
-
     
     if request.method == 'POST':
+        print(f"Datos POST recibidos: {request.POST}")
+
         form = addBien_form(request.POST)
+
+        print(f"Formulario es válido: {form.is_valid()}")
+        if not form.is_valid():
+            print(f"Errores del formulario: {form.errors}")
             
         condition_bien = request.POST.get('condition') 
             
@@ -59,8 +67,15 @@ def add_bien(request, id):
             if bien_fisico.part and '/' in bien_fisico.part:
                 try:
                     actual, total = map(int, bien_fisico.part.split('/'))
+
+                    if condition_bien == 'Enajenado' or condition_bien == 'Comodato':
+
+                        bien_fisico.part = f"{total}/{total}"
+                        bien_fisico.condition = 'Completo'
+                        bien_fisico.save()
+                        print(f"Bien físico marcado como Completo por condición {condition_bien}")
                     
-                    if actual < total:
+                    elif actual < total:
                         actual += 1
                         nuevo_part = f"{actual}/{total}"
                         
@@ -81,16 +96,22 @@ def add_bien(request, id):
             try:
                 form.instance.bm_worker = bien_fisico.bm
                 form.instance.id_bien = bien_fisico
+
+                if not request.user.is_superuser and responsable:
+                    form.instance.area = responsable.area
+                    print(f"Asignando área automática: {responsable.area}")
                 
                 if condition_bien:
                     form.instance.condition = condition_bien
                     print(f"Asignando condición: {condition_bien} a la instancia")
                 
                 asignacion = form.save()
+                messages.success(request, "Bien guardado correctamente")
                 
                 print(f"Asignación guardada exitosamente con ID: {asignacion.id}")
                 print(f"Condición guardada: {asignacion.condition}")
                 print(f"Condición en BD: {Bienes_persona.objects.get(id=asignacion.id).condition}")
+                print(f"Área guardada: {asignacion.area}")
                 
                 return redirect('bienes')
                 
@@ -112,17 +133,25 @@ def add_bien(request, id):
                 'form_errors': form.errors,
                 'responsable': responsable,
                 'empleados': empleados,
+                'is_juridico': is_juridico,
                 'is_admin': request.user.is_superuser,
             }
             return render(request, 'bienes/add_bien_det.html', context)
     
     else:
         # Método GET (carga inicial)
+
+        initial_data = {}
+        if not request.user.is_superuser and responsable:
+            initial_data['area'] = responsable.area
+
         form = addBien_form()
         context = {
             'form': form,
             'bien': bien_fisico, 
             'responsable': responsable,
+            'is_admin': request.user.is_superuser,
+            'is_juridico': is_juridico,
             'empleados': empleados,
         }
         return render(request, 'bienes/add_bien_det.html', context)

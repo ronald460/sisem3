@@ -45,15 +45,16 @@
           <input
             type="text"
             class="form-control"
-            value="{{ responsable.area }}"
-            disabled
+            value="{{ responsable.area.name }}"
+            readonly
           />
+          <input type="hidden" name="area" value="{{ responsable.area.id }}" />
           {% endif %}
         </div>
         <div class="div2">
           <h6>Funcionario</h6>
           <select name="id_worker" class="form-select">
-            <option value="">Seleccione un empleado</option>
+            <option value="">Seleccione un funcionario</option>
             {% for empleado in empleados %}
             <option value="{{ empleado.id }}">
               {{ empleado.names }} - {{ empleado.document }} {% if is_admin %}
@@ -87,7 +88,7 @@
           <select name="condition" class="form-select" required>
             <option value="Bueno">Bueno</option>
             <option value="Dañado">Dañado</option>
-            {% if responsable.area == "Juridico" or is_admin %}
+            {% if is_juridico or is_admin %}
             <option value="Enajenado">Enajenado</option>
             <option value="Comodato">Comodato</option>
             {% endif %}
