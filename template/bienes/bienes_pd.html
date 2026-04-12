@@ -35,15 +35,16 @@
     </script>
     {% endfor %} {% endif %} {% include 'header.html' %}
     <main class="data-table">
-      <h1>Listado de Bienes</h1>
+      <h1>Listado de Procedencia Desconocida</h1>
 
       <table id="DataTable">
         <thead>
           <tr>
             <th>BM</th>
             <th>Descripcion</th>
-            <th>Partes</th>
-            <th>Status</th>
+            <th>Area</th>
+            <th>Funcionario</th>
+            <th>Condicion</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -58,24 +59,10 @@
           lengthMenu: [10, 25, 50, -1],
           buttons: [
             {
-              text: "Bienes separados",
+              text: "Añadir nuevo registro",
               className: "btn-new",
               action: (e) => {
-                window.location.href = "/bienes_det/";
-              },
-            },
-            {
-              text: "Control Interno",
-              className: "btn-ci",
-              action: (e) => {
-                window.location.href = "";
-              },
-            },
-            {
-              text: "Procedencias Desconocidas",
-              className: "btn-pd",
-              action: (e) => {
-                window.location.href = "/bienes_pd/";
+                window.location.href = "/looll/";
               },
             },
             {
@@ -93,13 +80,13 @@
               },
             },
           ],
-
-          ajax: "{% url 'lista_bienes' %}",
+          ajax: "{% url 'lista_bienes_pd' %}",
           columns: [
             { data: "bm" },
             { data: "descripcion" },
-            { data: "partes" },
-            { data: "condicion" },
+            { data: "Area" },
+            { data: "Funcionario" },
+            { data: "status" },
             {
               data: null,
               searchable: false,

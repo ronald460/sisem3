@@ -8,6 +8,7 @@ from .models import *
 from .forms import *
 
 def bienes(request):
+
     return render(request, 'bienes/bienes.html')
 
 def lista_bienes(request):
@@ -18,7 +19,7 @@ def lista_bienes(request):
             'bm': c.bm,
             'descripcion': c.description,
             'partes': c.part,
-            'status': c.condition.capitalize(),
+            'condicion': c.condition,
             'id': c.id,
             } for c in entity
         ]
@@ -337,3 +338,59 @@ def listado_bienes_det(request):
 
 def bienes_det(request):
     return render(request, 'bienes/lista_bien_det.html')
+
+
+def bienes_pd(request):
+    return render(request, 'bienes/bienes_pd.html')
+
+def lista_bienes_pd(request):
+
+    usuario_actual = request.user
+    rol = get_user_role(usuario_actual)
+
+    if rol == 'admin':
+
+        entity = otros_bienes_pd.objects.all()
+        data = [
+            {
+                'bm': c.bm,
+                'descripcion': c.description,
+                'area': str(c.area.name) if c.area else '',
+                'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'observacion': c.observation or '',
+                'id': c.id,
+                } for c in entity
+            ]
+        return JsonResponse({'data':data}, safe=False)
+    
+    elif rol[0] == 'encargado_bienes':
+        area = rol[1]
+        
+        entity = otros_bienes_pd.objects.filter(area=area)
+        data = [
+            {
+                'bm': c.bm,
+                'descripcion': c.description,
+                'area': str(c.area.name) if c.area else '',
+                'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'observacion': c.observation or '',
+                'id': c.id,
+                } for c in entity
+            ]
+        return JsonResponse({'data':data}, safe=False)
+    
+    else:
+
+        entity = otros_bienes_pd.objects.filter(id_worker__user=usuario_actual)
+        data = [
+            {
+                'bm': c.bm,
+                'descripcion': c.description,
+                'area': str(c.area.name) if c.area else '',
+                'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'observacion': c.observation or '',
+                'id': c.id,
+                } for c in entity
+            ]
+        return JsonResponse({'data':data}, safe=False)
+
