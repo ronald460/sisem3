@@ -1003,13 +1003,20 @@ html.dark .dt-container .dt-paging .dt-paging-button:active {
   background-color: #0d6319;
 }
 
-.btn-area {
+.btn-ci {
   background-color: #0d6efd;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 15px;
-  cursor: pointer;
+}
+
+.btn-ci:hover {
+  background-color: #002d70;
+}
+
+.btn-pd {
+  background-color: #f52615;
+}
+
+.btn-pd:hover {
+  background-color: #c92b04;
 }
 
 .table-options {

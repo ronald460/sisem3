@@ -1,0 +1,106 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/form/bien_pd.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/sweetalert.min.css' %}" />
+    <script src="/static/js/sweetalert.min.js"></script>
+    <script src="/static/js/jquery-3.7.0.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>Bienes-pd</title>
+  </head>
+  <body>
+    {% if user.is_authenticated == 0 %}
+    <meta http-equiv="refresh" content="0;url={% url 'login' %}" />
+    {% endif %} {% if messages%} {% for m in messages %}
+    <script>
+      Swal.fire({
+        title: "Felicidades",
+        text: "{{m}}",
+        icon: "success",
+      });
+    </script>
+    {% endfor %} {% endif %} {% include 'header.html' %}
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="parent">
+        <div class="div1">
+          <h6>Area</h6>
+          {% if is_admin %} {{ form.area }} {% else %}
+          <input
+            type="text"
+            class="form-control"
+            value="{{ responsable.area.name }}"
+            readonly
+          />
+          <input type="hidden" name="area" value="{{ responsable.area.id }}" />
+          {% endif %}
+        </div>
+        <div class="div2">
+          <h6>Funcionario</h6>
+          <select name="id_worker" class="form-select">
+            <option value="">Seleccione un funcionario</option>
+            {% for empleado in empleados %}
+            <option value="{{ empleado.id }}">
+              {{ empleado.names }} - {{ empleado.document }} {% if is_admin %}
+              ({{ empleado.area }}) {% endif %}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="div3">
+          <h6>Serial</h6>
+          {{ form.serial }}
+        </div>
+        <div class="div4">
+          <h6>Condicion</h6>
+          <select name="condition" class="form-select" required>
+            <option value="Bueno">Bueno</option>
+            <option value="Dañado">Dañado</option>
+          </select>
+        </div>
+        <div class="div5">
+          <h6>Descripcion</h6>
+          {{ form.description }}
+        </div>
+        <div class="div6">
+          <h6>Observacion</h6>
+          {{ form.observation }}
+        </div>
+        <div class="div7">
+          <button class="btn btn-primary" type="submit">Guardar</button>
+        </div>
+        <div class="div8">
+          <a href="{% url 'home' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </div>
+    </form>
+    <script>
+      window.addEventListener("pageshow", function (event) {
+        if (
+          event.persisted ||
+          performance.getEntriesByType("navigation")[0].type === "back_forward"
+        ) {
+          window.location.href = "{% url 'home' %}";
+        }
+      });
+    </script>
+  </body>
+</html>

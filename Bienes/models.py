@@ -1,6 +1,7 @@
 from django.db import models
 from Administracion.models import *
 from django.contrib.auth.models import User
+from .managers import RegistroManager
 
 class Bienes (models.Model):
     id = models.AutoField(primary_key=True)
@@ -153,3 +154,52 @@ class encargado_bienes(models.Model):
 
     def __str__(self):
         return f"Encargado de Bienes #{self.id_worker} - ({self.area.name})"
+
+
+class otros_bienes_pd(models.Model):
+    id = models.AutoField(primary_key=True)
+    bm = models.CharField(max_length=200, unique=True, blank=False)
+    description = models.TextField(max_length=500, blank=True)
+    serial = models.CharField(max_length=100, blank=True)
+    id_worker = models.ForeignKey(Empleado, on_delete=models.CASCADE, max_length=20, blank=True)
+    area = models.ForeignKey(Departamento, on_delete=models.CASCADE, blank=False)
+    condition = models.CharField(max_length=50, blank=True)
+    observation = models.CharField(max_length=100, blank=True, null=True)
+    status = models.BooleanField(default=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = RegistroManager()
+    
+    def save(self, *args, **kwargs):
+        if not self.bm:
+            self.bm = otros_bienes_pd.objects.obtener_siguiente_numero()
+        super().save(*args, **kwargs)
+
+    class Meta:
+        db_table = 'otros_bienes_pd'
+        ordering = ['-id']
+
+    def __str__(self):
+        return f"Otro Bien #{self.id} - ({self.description})"
+    
+
+class otros_bienes_ci(models.Model):
+    id = models.AutoField(primary_key=True)
+    bm = models.CharField(max_length=200, blank=False)
+    description = models.TextField(max_length=500, blank=True)
+    serial = models.CharField(max_length=100, blank=True)
+    id_worker = models.ForeignKey(Empleado, on_delete=models.CASCADE, max_length=20, blank=True)
+    area = models.ForeignKey(Departamento, on_delete=models.CASCADE, blank=False)
+    condition = models.CharField(max_length=50, blank=True)
+    observation = models.CharField(max_length=100, blank=True, null=True)
+    status = models.BooleanField(default=True, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'otros_bienes_ci'
+        ordering = ['-id']
+
+    def __str__(self):
+        return f"Otro Bien #{self.id} - ({self.description})"
