@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 LOGIN_REDIRECT_URL = '/home'
+LOGOUT_REDIRECT_URL = '/login'
 
 
 # Application definition
@@ -125,6 +126,9 @@ STATICFILES_DIRS = [BASE_DIR / "static", 'C:/Users/EMILBE/Desktop/sisem3/static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+
+SESSION_EXPIRE_SECONDS = 28800
+#SESSION_TIMEOUT_REDIRECT = '172.19.50.136:8000/login'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

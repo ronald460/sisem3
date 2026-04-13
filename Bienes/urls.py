@@ -11,6 +11,11 @@ urlpatterns = [
     path('borrar_asignacion/<int:id>/', views.borrar_asignacion, name='borrar_asignacion'),
     path('bienes_det/', views.bienes_det, name='bienes_det'),
     path('bienes_pd/', views.bienes_pd, name='bienes_pd'),
+    path('add_bien_pd/', views.add_bien_pd, name='add_bien_pd'),
+    path('delete_bien_pd/<int:id>/', views.delete_bien_pd, name='delete_bien_pd'),
+    path('bienes_ci/', views.bienes_ci, name='bienes_ci'),
+    path('add_bien_ci/', views.add_bien_ci, name='add_bien_ci'),
+    path('delete_bien_ci/<int:id>/', views.delete_bien_ci, name='delete_bien_ci'),
     
 
 
@@ -20,6 +25,7 @@ urlpatterns = [
     path('listado_bienes_det/', views.lista_bienes_det, name='lista_bienes_det'),
     path('listado_bienes_asignados/', views.listado_bienes_det, name='lista_bienes_asignados'),
     path('lisado_bienes_pd/', views.lista_bienes_pd, name='lista_bienes_pd'),
+    path('listado_bienes_ci/', views.lista_bienes_ci, name='lista_bienes_ci'),
     
    
 

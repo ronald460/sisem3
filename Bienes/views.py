@@ -339,7 +339,6 @@ def listado_bienes_det(request):
 def bienes_det(request):
     return render(request, 'bienes/lista_bien_det.html')
 
-
 def bienes_pd(request):
     return render(request, 'bienes/bienes_pd.html')
 
@@ -350,13 +349,14 @@ def lista_bienes_pd(request):
 
     if rol == 'admin':
 
-        entity = otros_bienes_pd.objects.all()
+        entity = otros_bienes_pd.objects.filter(status=True)
         data = [
             {
                 'bm': c.bm,
                 'descripcion': c.description,
                 'area': str(c.area.name) if c.area else '',
                 'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'condicion': c.condition,
                 'observacion': c.observation or '',
                 'id': c.id,
                 } for c in entity
@@ -366,13 +366,14 @@ def lista_bienes_pd(request):
     elif rol[0] == 'encargado_bienes':
         area = rol[1]
         
-        entity = otros_bienes_pd.objects.filter(area=area)
+        entity = otros_bienes_pd.objects.filter(area=area, status=True)
         data = [
             {
                 'bm': c.bm,
                 'descripcion': c.description,
                 'area': str(c.area.name) if c.area else '',
                 'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'condicion': c.condition,
                 'observacion': c.observation or '',
                 'id': c.id,
                 } for c in entity
@@ -381,7 +382,7 @@ def lista_bienes_pd(request):
     
     else:
 
-        entity = otros_bienes_pd.objects.filter(id_worker__user=usuario_actual)
+        entity = otros_bienes_pd.objects.filter(id_worker__user=usuario_actual, status=True)
         data = [
             {
                 'bm': c.bm,
@@ -389,8 +390,163 @@ def lista_bienes_pd(request):
                 'area': str(c.area.name) if c.area else '',
                 'funcionario': str(c.id_worker.names) if c.id_worker else '',
                 'observacion': c.observation or '',
+                'condicion': c.condition,
                 'id': c.id,
                 } for c in entity
             ]
         return JsonResponse({'data':data}, safe=False)
+    
+def add_bien_pd(request):
+
+    responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+
+    if request.user.is_superuser:
+        empleados = Empleado.objects.all()
+    else:
+        responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+        if responsable:
+            empleados = Empleado.objects.filter(area=responsable.area)  # Solo su área
+        else:
+            empleados = Empleado.objects.none()
+
+    if request.method == 'POST':
+        form = OtroBienPd_form(request.POST)
+        condition_bien = request.POST.get('condition') 
+
+        if form.is_valid():
+
+            if not request.user.is_superuser and responsable:
+                    form.instance.area = responsable.area
+                    print(f"Asignando área automática: {responsable.area}")
+            form.instance.condition = condition_bien
+            form.save()
+            messages.success(request, "Bien guardado correctamente")
+            return redirect('bienes_pd')
+        else:
+            messages.error(request, "Error al guardar el bien")
+
+    context = {
+        'responsable': responsable,
+        'form': OtroBienPd_form(),
+        'is_admin': request.user.is_superuser,
+        'empleados': empleados,
+    }
+
+    return render(request, 'bienes/add_bien_pd.html', context)
+
+def delete_bien_pd(request, id):
+    try:
+        bien = get_object_or_404(otros_bienes_pd, id=id)
+        bien.delete()
+        messages.success(request, "Bien eliminado correctamente")
+    except Exception as e:
+        print(f"Error al eliminar el bien: {e}")
+        messages.error(request, f"Error al eliminar el bien: {str(e)}")
+    return redirect('bienes_pd')
+
+def bienes_ci(request):
+    return render(request, 'bienes/bienes_ci.html')
+
+def lista_bienes_ci(request):
+
+    usuario_actual = request.user
+    rol = get_user_role(usuario_actual)
+
+    if rol == 'admin':
+
+        entity = otros_bienes_ci.objects.filter(status=True)
+        data = [
+            {
+                'bm': c.bm,
+                'descripcion': c.description,
+                'area': str(c.area.name) if c.area else '',
+                'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'condicion': c.condition,
+                'observacion': c.observation or '',
+                'id': c.id,
+                } for c in entity
+            ]
+        return JsonResponse({'data':data}, safe=False)
+    
+    elif rol[0] == 'encargado_bienes':
+        area = rol[1]
+        
+        entity = otros_bienes_ci.objects.filter(area=area, status=True)
+        data = [
+            {
+                'bm': c.bm,
+                'descripcion': c.description,
+                'area': str(c.area.name) if c.area else '',
+                'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'condicion': c.condition,
+                'observacion': c.observation or '',
+                'id': c.id,
+                } for c in entity
+            ]
+        return JsonResponse({'data':data}, safe=False)
+    
+    else:
+
+        entity = otros_bienes_ci.objects.filter(id_worker__user=usuario_actual, status=True)
+        data = [
+            {
+                'bm': c.bm,
+                'descripcion': c.description,
+                'area': str(c.area.name) if c.area else '',
+                'funcionario': str(c.id_worker.names) if c.id_worker else '',
+                'observacion': c.observation or '',
+                'condicion': c.condition,
+                'id': c.id,
+                } for c in entity
+            ]
+        return JsonResponse({'data':data}, safe=False)
+    
+def add_bien_ci(request):
+
+    responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+
+    if request.user.is_superuser:
+        empleados = Empleado.objects.all()
+    else:
+        responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+        if responsable:
+            empleados = Empleado.objects.filter(area=responsable.area)  # Solo su área
+        else:
+            empleados = Empleado.objects.none()
+
+    if request.method == 'POST':
+        form = OtroBienCi_form(request.POST)
+        condition_bien = request.POST.get('condition') 
+
+        if form.is_valid():
+
+            if not request.user.is_superuser and responsable:
+                    form.instance.area = responsable.area
+                    print(f"Asignando área automática: {responsable.area}")
+            form.instance.condition = condition_bien
+            form.save()
+            messages.success(request, "Bien guardado correctamente")
+            return redirect('bienes_ci')
+        else:
+            messages.error(request, "Error al guardar el bien")
+
+    context = {
+        'responsable': responsable,
+        'form': OtroBienCi_form(),
+        'is_admin': request.user.is_superuser,
+        'empleados': empleados,
+    }
+
+    return render(request, 'bienes/add_bien_ci.html', context)
+
+def delete_bien_ci(request, id):
+    try:
+        bien = get_object_or_404(otros_bienes_ci, id=id)
+        bien.delete()
+        messages.success(request, "Bien eliminado correctamente")
+    except Exception as e:
+        print(f"Error al eliminar el bien: {e}")
+        messages.error(request, f"Error al eliminar el bien: {str(e)}")
+    return redirect('bienes_ci')
+
 
