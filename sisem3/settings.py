@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-m2v=5=fsm%*nagwod@*mtk-8k@_-s^5=$c%chp@15nrwztw3=g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['172.19.50.136']
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/login'
 
@@ -80,10 +80,14 @@ WSGI_APPLICATION = 'sisem3.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+   'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'Sisem3',
+        'USER': 'postgres',
+        'PASSWORD':'123456',
+        'HOST':'localhost',
+        'PORT': '5432',
+    },
 }
 
 
@@ -122,7 +126,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "static", 'C:/Users/EMILBE/Desktop/sisem3/static']
+STATICFILES_DIRS = [BASE_DIR / "static", 'C:/Users/SERVIDOR-SEMAT/Desktop/sisem3/static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
