@@ -217,6 +217,36 @@ def profile(request, id):
     
     return render(request, 'profile.html', context)
 
+def editar_funcionario(request, id):
+    empleado = get_object_or_404(Empleado, id=id)
+    usuario_actual = request.user
+    responsable = encargado_bienes.objects.filter(id_worker=usuario_actual).first()
+    
+    if request.method == 'POST':
+        formulario = EmpleadoForm(request.POST, instance=empleado)
+
+        if not request.user.is_superuser and responsable:
+            # Crear una copia mutable de POST
+            post_data = request.POST.copy()
+            post_data['area'] = responsable.area
+            formulario = EmpleadoForm(post_data)
+        else:
+            formulario = EmpleadoForm(request.POST)
+
+        if formulario.is_valid():
+            formulario.save()
+            messages.success(request, 'Empleado actualizado exitosamente')
+            return redirect('funcionarios')
+    else:
+        formulario = EmpleadoForm(instance=empleado)
+    
+    context = {
+        'form': formulario,
+        'empleado': empleado,
+        'is_admin': request.user.is_superuser,
+        'responsable': responsable,
+    }
+    return render(request, 'administracion/edit_func.html', context)
 
 def eliminar_funcionario(request, id):
 
