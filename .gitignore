@@ -77,6 +77,8 @@ venv.bak/
 .history/
 
 *initial.py
+# Archivos de configuración
+*settings.py
 
 ### Sistemas Operativos (macOS, Linux, Windows) ###
 # Archivos basura o de caché del sistema.
