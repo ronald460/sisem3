@@ -24,6 +24,8 @@ class Bienes (models.Model):
         ('Incompleto', 'Incompleto'),
     )
     condition = models.CharField(max_length=50, choices=select_b, default='Completo')
+    status = models.BooleanField(default=True, null=True, blank=True)
+    
  
     class Meta:
         db_table = 'bienes'

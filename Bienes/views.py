@@ -13,7 +13,7 @@ def bienes(request):
 
 def lista_bienes(request):
 
-    entity = Bienes.objects.all()
+    entity = Bienes.objects.filter(status=True)  # Solo bienes activos
     data = [
         {
             'bm': c.bm,
