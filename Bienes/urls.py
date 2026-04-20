@@ -16,6 +16,10 @@ urlpatterns = [
     path('bienes_ci/', views.bienes_ci, name='bienes_ci'),
     path('add_bien_ci/', views.add_bien_ci, name='add_bien_ci'),
     path('delete_bien_ci/<int:id>/', views.delete_bien_ci, name='delete_bien_ci'),
+    path('etiquetas_bm_pdf/', views.etiquetas_bm_pdf, name='etiquetas_bm'),
+    path('etiquetas_ci_pdf/', views.etiquetas_ci_pdf, name='etiquetas_ci'),
+    path('etiquetas_pd_pdf/', views.etiquetas_pd_pdf, name='etiquetas_pd'),
+    path('rpu_pdf/', views.rpu_pdf, name='rpu_pdf'),
     
 
 

@@ -79,6 +79,13 @@
               },
             },
             {
+              text: "Etiquetas de Bienes",
+              className: "btn-etiq",
+              action: (e) => {
+                window.location.href = "{% url 'etiquetas_bm' %}";
+              },
+            },
+            {
               extend: "excel",
               filename: " BIENES-EXCEL",
               exportOptions: {

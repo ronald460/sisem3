@@ -1019,6 +1019,10 @@ html.dark .dt-container .dt-paging .dt-paging-button:active {
   background-color: #c92b04;
 }
 
+.btn-etiq {
+  background-color: #99a0a1;
+}
+
 .table-options {
   display: flex;
   flex-direction: row;

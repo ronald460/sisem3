@@ -1,7 +1,7 @@
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from Bienes.models import Bienes, encargado_bienes
+from Bienes.models import *
 from Bienes.utils import get_user_role
 from django.http import JsonResponse
 from django.contrib import messages
@@ -207,12 +207,20 @@ def profile(request, id):
 
 
     employee = get_object_or_404(Empleado, id=id)
+     
     fecha_nacimiento = employee.birthday
     edad = hoy.year - fecha_nacimiento.year - ((hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+
+    n_bienes = Bienes_persona.objects.filter(id_worker=employee).count()
+    n_pd = otros_bienes_pd.objects.filter(id_worker=employee).count()
+    n_ci = otros_bienes_ci.objects.filter(id_worker=employee).count()
+
+    total_bienes = n_bienes + n_pd + n_ci
 
     context = {
         'employee': employee,
         'edad': edad,
+        'total_bienes': total_bienes,
     }
     
     return render(request, 'profile.html', context)
