@@ -66,6 +66,13 @@
               },
             },
             {
+              text: "Etiquetas de C.I",
+              className: "btn-etiq",
+              action: (e) => {
+                window.location.href = "{% url 'etiquetas_ci' %}";
+              },
+            },
+            {
               extend: "excel",
               filename: " BIENES-EXCEL",
               exportOptions: {

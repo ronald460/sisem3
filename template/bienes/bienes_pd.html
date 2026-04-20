@@ -66,6 +66,13 @@
               },
             },
             {
+              text: "Etiquetas de P.D",
+              className: "btn-etiq",
+              action: (e) => {
+                window.location.href = "{% url 'etiquetas_pd' %}";
+              },
+            },
+            {
               extend: "excel",
               filename: " BIENES-EXCEL",
               exportOptions: {

@@ -1,11 +1,21 @@
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
 from .utils import get_empleados_por_area_usuario, get_user_role
-from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse, FileResponse
+from reportlab.lib.utils import ImageReader
+from reportlab.lib.colors import HexColor
+from reportlab.platypus import Paragraph
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm, mm
+from reportlab.pdfgen import canvas
 from django.contrib import messages
+from datetime import date, datetime
+from reportlab.lib import colors
 from django.urls import reverse
 from .models import *
 from .forms import *
+import io
 
 def bienes(request):
 
@@ -549,4 +559,529 @@ def delete_bien_ci(request, id):
         messages.error(request, f"Error al eliminar el bien: {str(e)}")
     return redirect('bienes_ci')
 
+def etiquetas_bm_pdf(request):
+    responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+    
+    if not responsable:
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
+        p.drawString(100, 750, "No se encontraron bienes asignados")
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+        return FileResponse(buffer, as_attachment=True, filename='error.pdf')
+    
+    area = responsable.area.name if responsable.area else "Área Desconocida"
+    bienes_asignados = Bienes_persona.objects.filter(area=responsable.area)
+    
+    # Diccionario de colores por área
+    colores_areas = {
+        "ADMINISTRACION": colors.HexColor('#FF930F'),
+        "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
+        "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
+        "Divison de Informatica": colors.HexColor('#7D807D'),
+        "Div. Calidad Gest": colors.HexColor('#0707A5'),
+        "Gerencia de Licores": colors.HexColor('#E30000FC'),
+        "Gerencia General": colors.HexColor('#FFFFFFCC'),
+        "Gerencia de Inmuebles": colors.HexColor('#ED11C3FC'),
+        "Gerencia Juridica": colors.HexColor('#94077AFC'),
+        "GADT": colors.HexColor('#0F7BFFFC'),
+        "Gerencia de Recaudacion": colors.HexColor('#07F207CC'),
+        "Apostilla": colors.HexColor('#418676FF'),
+        "Deposito": colors.HexColor('#870024FF'),
+    }
+    
+    color_area = colores_areas.get(area, colors.HexColor('#CCCCCC'))
+    
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    
+    # Configuración de la página
+    ancho_pagina, alto_pagina = A4
+    margen_izquierdo = 1 * cm
+    margen_superior = alto_pagina - 1.5 * cm
+    margen_derecho = ancho_pagina - 1 * cm
+    
+    ancho_etiqueta = (margen_derecho - margen_izquierdo) / 3 - 0.3 * cm
+    alto_etiqueta = 2.5 * cm  # Reducí la altura porque hay menos información
+    separacion_horizontal = 0.3 * cm
+    separacion_vertical = 0.4 * cm
+    
+    contador = 0
+    pagina_actual = 1
+    
+    def dibujar_etiqueta(p, x, y, bien, color_fondo, area_nombre):
+        p.saveState()
+        
+        # Dibujar rectángulo de fondo
+        p.setFillColor(color_fondo)
+        p.setStrokeColor(colors.black)
+        p.setLineWidth(0.5)
+        p.rect(x, y, ancho_etiqueta, alto_etiqueta, fill=1, stroke=1)
+        
+        # Calcular contraste para el texto
+        brillo = (color_fondo.red * 0.299 + color_fondo.green * 0.587 + color_fondo.blue * 0.114)
+        if brillo > 0.7:
+            color_texto = colors.black
+        else:
+            color_texto = colors.white
+        
+        p.setFillColor(color_texto)
+        
+        # Área (solo el nombre del área del encargado)
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(x + 4, y + alto_etiqueta - 10, f"{area_nombre.upper()}")
+        
+        # Línea separadora
+        p.setStrokeColor(color_texto)
+        p.line(x + 5, y + alto_etiqueta - 15, x + ancho_etiqueta - 5, y + alto_etiqueta - 15)
+        
+        # Número del bien (BM)
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(x + 5, y + alto_etiqueta - 40, f"BM: {bien.bm_worker}")
+        
+        # Responsable del bien (nombre del empleado de la tabla Empleado)
+        p.setFont("Helvetica", 10)
+        nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
+        p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
+        
+        p.restoreState()
+    
+    x_actual = margen_izquierdo
+    y_actual = margen_superior - alto_etiqueta
+    
+    for idx, bien in enumerate(bienes_asignados):
+        columna = contador % 3
+        fila = (contador // 3) % 6
+        
+        if columna == 0:
+            x_actual = margen_izquierdo
+        elif columna == 1:
+            x_actual = margen_izquierdo + ancho_etiqueta + separacion_horizontal
+        else:
+            x_actual = margen_izquierdo + (ancho_etiqueta + separacion_horizontal) * 2
+        
+        y_actual = margen_superior - alto_etiqueta - (fila * (alto_etiqueta + separacion_vertical))
+        
+        dibujar_etiqueta(p, x_actual, y_actual, bien, color_area, area)
+        
+        contador += 1
+        
+        if contador % 18 == 0 and idx < len(bienes_asignados) - 1:
+            p.setFont("Helvetica", 8)
+            p.setFillColor(colors.grey)
+            p.drawString(ancho_pagina - 50, 20, f"Página {pagina_actual}")
+            pagina_actual += 1
+            p.showPage()
+            contador = 0
+            p.setFillColor(color_area)
+    
+    # Agregar número de página en la última página
+    p.setFont("Helvetica", 8)
+    p.setFillColor(colors.grey)
+    p.drawString(ancho_pagina - 50, 20, f"Página {pagina_actual}")
+    
+    from datetime import datetime
+    fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
+    p.setFont("Helvetica", 7)
+    p.drawString(margen_izquierdo, 20, f"Generado: {fecha_actual} | Área: {area}")
+    
+    p.showPage()
+    p.save()
+    
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f'etiquetas_{area}_{fecha_actual.replace("/", "-").replace(" ", "_").replace(":", "-")}.pdf')
+
+def etiquetas_ci_pdf(request):
+    responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+    
+    if not responsable:
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
+        p.drawString(100, 750, "No se encontraron bienes asignados")
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+        return FileResponse(buffer, as_attachment=True, filename='error.pdf')
+    
+    area = responsable.area.name if responsable.area else "Área Desconocida"
+    bienes_asignados = otros_bienes_ci.objects.filter(area=responsable.area)
+    
+    # Diccionario de colores por área
+    colores_areas = {
+        "ADMINISTRACION": colors.HexColor('#FF930F'),
+        "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
+        "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
+        "Divison de Informatica": colors.HexColor('#7D807D'),
+        "Div. Calidad Gest": colors.HexColor('#0707A5'),
+        "Gerencia de Licores": colors.HexColor('#E30000FC'),
+        "Gerencia General": colors.HexColor('#FFFFFFCC'),
+        "Gerencia de Inmuebles": colors.HexColor('#ED11C3FC'),
+        "Gerencia Juridica": colors.HexColor('#94077AFC'),
+        "GADT": colors.HexColor('#0F7BFFFC'),
+        "Gerencia de Recaudacion": colors.HexColor('#07F207CC'),
+        "Apostilla": colors.HexColor('#418676FF'),
+        "Deposito": colors.HexColor('#870024FF'),
+    }
+    
+    color_area = colores_areas.get(area, colors.HexColor('#CCCCCC'))
+    
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    
+    # Configuración de la página
+    ancho_pagina, alto_pagina = A4
+    margen_izquierdo = 1 * cm
+    margen_superior = alto_pagina - 1.5 * cm
+    margen_derecho = ancho_pagina - 1 * cm
+    
+    ancho_etiqueta = (margen_derecho - margen_izquierdo) / 3 - 0.3 * cm
+    alto_etiqueta = 2.5 * cm  # Reducí la altura porque hay menos información
+    separacion_horizontal = 0.3 * cm
+    separacion_vertical = 0.4 * cm
+    
+    contador = 0
+    pagina_actual = 1
+    
+    def dibujar_etiqueta(p, x, y, bien, color_fondo, area_nombre):
+        p.saveState()
+        
+        # Dibujar rectángulo de fondo
+        p.setFillColor(color_fondo)
+        p.setStrokeColor(colors.black)
+        p.setLineWidth(0.5)
+        p.rect(x, y, ancho_etiqueta, alto_etiqueta, fill=1, stroke=1)
+        
+        # Calcular contraste para el texto
+        brillo = (color_fondo.red * 0.299 + color_fondo.green * 0.587 + color_fondo.blue * 0.114)
+        if brillo > 0.7:
+            color_texto = colors.black
+        else:
+            color_texto = colors.white
+        
+        p.setFillColor(color_texto)
+        
+        # Área (solo el nombre del área del encargado)
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(x + 4, y + alto_etiqueta - 10, f"{area_nombre.upper()}")
+        
+        # Línea separadora
+        p.setStrokeColor(color_texto)
+        p.line(x + 5, y + alto_etiqueta - 15, x + ancho_etiqueta - 5, y + alto_etiqueta - 15)
+        
+        # Número del bien (BM)
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(x + 5, y + alto_etiqueta - 40, f"{bien.bm}")
+        
+        # Responsable del bien (nombre del empleado de la tabla Empleado)
+        p.setFont("Helvetica", 10)
+        nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
+        p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
+        
+        p.restoreState()
+    
+    x_actual = margen_izquierdo
+    y_actual = margen_superior - alto_etiqueta
+    
+    for idx, bien in enumerate(bienes_asignados):
+        columna = contador % 3
+        fila = (contador // 3) % 6
+        
+        if columna == 0:
+            x_actual = margen_izquierdo
+        elif columna == 1:
+            x_actual = margen_izquierdo + ancho_etiqueta + separacion_horizontal
+        else:
+            x_actual = margen_izquierdo + (ancho_etiqueta + separacion_horizontal) * 2
+        
+        y_actual = margen_superior - alto_etiqueta - (fila * (alto_etiqueta + separacion_vertical))
+        
+        dibujar_etiqueta(p, x_actual, y_actual, bien, color_area, area)
+        
+        contador += 1
+        
+        if contador % 18 == 0 and idx < len(bienes_asignados) - 1:
+            p.setFont("Helvetica", 8)
+            p.setFillColor(colors.grey)
+            p.drawString(ancho_pagina - 50, 20, f"Página {pagina_actual}")
+            pagina_actual += 1
+            p.showPage()
+            contador = 0
+            p.setFillColor(color_area)
+    
+    # Agregar número de página en la última página
+    p.setFont("Helvetica", 8)
+    p.setFillColor(colors.grey)
+    p.drawString(ancho_pagina - 50, 20, f"Página {pagina_actual}")
+    
+    from datetime import datetime
+    fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
+    p.setFont("Helvetica", 7)
+    p.drawString(margen_izquierdo, 20, f"Generado: {fecha_actual} | Área: {area}")
+    
+    p.showPage()
+    p.save()
+    
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f'etiquetas_{area}_{fecha_actual.replace("/", "-").replace(" ", "_").replace(":", "-")}.pdf')
+
+def etiquetas_pd_pdf(request):
+    responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+    
+    if not responsable:
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
+        p.drawString(100, 750, "No se encontraron bienes asignados")
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+        return FileResponse(buffer, as_attachment=True, filename='error.pdf')
+    
+    area = responsable.area.name if responsable.area else "Área Desconocida"
+    bienes_asignados = otros_bienes_pd.objects.filter(area=responsable.area)
+    
+    # Diccionario de colores por área
+    colores_areas = {
+        "ADMINISTRACION": colors.HexColor('#FF930F'),
+        "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
+        "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
+        "Divison de Informatica": colors.HexColor('#7D807D'),
+        "Div. Calidad Gest": colors.HexColor('#0707A5'),
+        "Gerencia de Licores": colors.HexColor('#E30000FC'),
+        "Gerencia General": colors.HexColor('#FFFFFFCC'),
+        "Gerencia de Inmuebles": colors.HexColor('#ED11C3FC'),
+        "Gerencia Juridica": colors.HexColor('#94077AFC'),
+        "GADT": colors.HexColor('#0F7BFFFC'),
+        "Gerencia de Recaudacion": colors.HexColor('#07F207CC'),
+        "Apostilla": colors.HexColor('#418676FF'),
+        "Deposito": colors.HexColor('#870024FF'),
+    }
+    
+    color_area = colores_areas.get(area, colors.HexColor('#CCCCCC'))
+    
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    
+    # Configuración de la página
+    ancho_pagina, alto_pagina = A4
+    margen_izquierdo = 1 * cm
+    margen_superior = alto_pagina - 1.5 * cm
+    margen_derecho = ancho_pagina - 1 * cm
+    
+    ancho_etiqueta = (margen_derecho - margen_izquierdo) / 3 - 0.3 * cm
+    alto_etiqueta = 2.5 * cm  # Reducí la altura porque hay menos información
+    separacion_horizontal = 0.3 * cm
+    separacion_vertical = 0.4 * cm
+    
+    contador = 0
+    pagina_actual = 1
+    
+    def dibujar_etiqueta(p, x, y, bien, color_fondo, area_nombre):
+        p.saveState()
+        
+        # Dibujar rectángulo de fondo
+        p.setFillColor(color_fondo)
+        p.setStrokeColor(colors.black)
+        p.setLineWidth(0.5)
+        p.rect(x, y, ancho_etiqueta, alto_etiqueta, fill=1, stroke=1)
+        
+        # Calcular contraste para el texto
+        brillo = (color_fondo.red * 0.299 + color_fondo.green * 0.587 + color_fondo.blue * 0.114)
+        if brillo > 0.7:
+            color_texto = colors.black
+        else:
+            color_texto = colors.white
+        
+        p.setFillColor(color_texto)
+        
+        # Área (solo el nombre del área del encargado)
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(x + 4, y + alto_etiqueta - 10, f"{area_nombre.upper()}")
+        
+        # Línea separadora
+        p.setStrokeColor(color_texto)
+        p.line(x + 5, y + alto_etiqueta - 15, x + ancho_etiqueta - 5, y + alto_etiqueta - 15)
+        
+        # Número del bien (BM)
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(x + 5, y + alto_etiqueta - 40, f"{bien.bm}")
+        
+        # Responsable del bien (nombre del empleado de la tabla Empleado)
+        p.setFont("Helvetica", 10)
+        nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
+        p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
+        
+        p.restoreState()
+    
+    x_actual = margen_izquierdo
+    y_actual = margen_superior - alto_etiqueta
+    
+    for idx, bien in enumerate(bienes_asignados):
+        columna = contador % 3
+        fila = (contador // 3) % 6
+        
+        if columna == 0:
+            x_actual = margen_izquierdo
+        elif columna == 1:
+            x_actual = margen_izquierdo + ancho_etiqueta + separacion_horizontal
+        else:
+            x_actual = margen_izquierdo + (ancho_etiqueta + separacion_horizontal) * 2
+        
+        y_actual = margen_superior - alto_etiqueta - (fila * (alto_etiqueta + separacion_vertical))
+        
+        dibujar_etiqueta(p, x_actual, y_actual, bien, color_area, area)
+        
+        contador += 1
+        
+        if contador % 18 == 0 and idx < len(bienes_asignados) - 1:
+            p.setFont("Helvetica", 8)
+            p.setFillColor(colors.grey)
+            p.drawString(ancho_pagina - 50, 20, f"Página {pagina_actual}")
+            pagina_actual += 1
+            p.showPage()
+            contador = 0
+            p.setFillColor(color_area)
+    
+    # Agregar número de página en la última página
+    p.setFont("Helvetica", 8)
+    p.setFillColor(colors.grey)
+    p.drawString(ancho_pagina - 50, 20, f"Página {pagina_actual}")
+    
+    from datetime import datetime
+    fecha_actual = datetime.now().strftime("%d/%m/%Y %H:%M")
+    p.setFont("Helvetica", 7)
+    p.drawString(margen_izquierdo, 20, f"Generado: {fecha_actual} | Área: {area}")
+    
+    p.showPage()
+    p.save()
+    
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f'etiquetas_{area}_{fecha_actual.replace("/", "-").replace(" ", "_").replace(":", "-")}.pdf')
+
+def rpu_pdf(request):
+
+    my_Style = getSampleStyleSheet()
+    my_Style=ParagraphStyle('My Para style',
+        fontName='Times-Roman',
+        fontSize=12,
+        borderWidth=0,
+        leading=15,
+        alignment = 1,
+        stikeGap = 1,
+        strikeOffset = 0.25,
+        endDots = None,
+        borderPadding= 0,
+    )
+
+    my_Style2 = getSampleStyleSheet()
+    my_Style2=ParagraphStyle('My Para style 2',
+        fontName='Times-Roman',
+        fontSize=12,
+        firstLineIndent = 30,
+        rightIndent = 15,
+        borderWidth=0,
+        leading=17,
+        alignment= 4
+    )
+    
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+
+    logo = ImageReader('static/image/semat_logo.png')
+    hoy = date.today()
+
+    hora_actual = datetime.now().strftime("%I:%M:%p")
+
+    # ------------------- ENCABEZADO ------------------- #
+    azul_claro = HexColor('#2F86E9FF')
+
+    p.setFillColor(azul_claro)  
+    p.rect(35, 700, 530, 100, fill=1)
+    p.rect(35, 700, 180, 100, fill=1)
+    p.rect(215, 750, 350, 50, fill=1)
+    p.drawImage(logo, 40, 710, 170, 82, mask='auto')
+
+    titulo = "<b>BIENES PÚBLICOS </b>"
+    subtitulo = "<b>RESPONSABILIDAD DE BIENES </b>"
+
+    pti = Paragraph(titulo, my_Style)
+    pti.wrap(410, 350)
+    pti.drawOn(p, 180, 770)
+
+    psub = Paragraph(subtitulo, my_Style)
+    psub.wrap(410, 350)
+    psub.drawOn(p, 180, 720)
+
+    #-------------------- CONTENIDO ------------------- #
+    titulo_2 = "<b><u>ACTA DE BIENES</u></b>"
+
+    prf1 = "Siendo las "+ hora_actual +" del día "+ hoy.strftime('%d') +" de "+ hoy.strftime('%B') +" del año "+ hoy.strftime('%Y') +", yo <b>Argenis Cordero</b> portador de la cédula de identidad Nº <b>V-10.779.050</b>, en condición de responsable de bienes declaro; que recibo los Bienes Muebles especificados en inventario de bienes mueble en (BM-1), para ser utilizado en el desempeño de la unidad de trabajo del área de <b>Informática</b>"
+
+    prf2 = "<bullet>&bull;</bullet><b>Primera:</b> He leído, y entendido que, si se demuestra mi negligencia o impericia en el manejo de los Bienes, así como la omisión o retardo en las notificaciones antes mencionadas, podrá generar responsabilidades disciplinarias, administrativas, penales o civiles de acuerdo a las normativas y leyes."
+
+    prf3 = "<bullet>&bull;</bullet><b>Segunda:</b> En el caso de ocasionarse un Hurto o Robo, deberá formular la denuncia ante el cuerpo de Investigaciones Científicas Penales y Criminalísticas (CICPC) y notificar a La unidad de Bienes Municipales, iniciando los procedimientos a que haya lugar."
+
+    
+
+    pti2 = Paragraph(titulo_2, my_Style)
+    pti2.wrap(530, 530) 
+    pti2.drawOn(p, 35, 640)
+
+    prf = Paragraph(prf1, my_Style2)
+    prf.wrap(530, 530)
+    prf.drawOn(p, 40, 550)
+
+    prf_2 = Paragraph(prf2, my_Style2)
+    prf_2.wrap(475, 470)
+    prf_2.drawOn(p, 90, 465)
+
+    prf_3 = Paragraph(prf3, my_Style2)
+    prf_3.wrap(475, 470)
+    prf_3.drawOn(p, 90, 400)
+
+    p.rect(35, 335, 530, 40, fill=1)
+    p.rect(120, 335, 445, 40, fill=1)
+    p.rect(205, 335, 360, 40, fill=1)
+    p.rect(450, 335, 115, 40, fill=1)
+
+    p.setFont("Times-Roman", 9)
+    p.setFillColor(colors.black)  
+    p.drawString(40, 350, "CÓDIGO DEL BIEN")
+    p.drawString(125, 350, "SERIAL DEL BIEN")
+    p.drawString(285, 350, "DESCRIPCIÓN DEL BIEN")
+    p.drawString(465, 350, "CONDICIÓN DEL BIEN")
+
+    # Aquí deberías agregar la lógica para listar los bienes y dibujarlos en el PDF
+    # Por ejemplo, podrías iterar sobre los bienes asignados a un empleado y dib
+
+    p.showPage()
+    p.save()
+
+    #----------- 2DA PÁGINA -----------#
+
+    p.setFillColor(azul_claro)  
+    p.rect(35, 700, 530, 100, fill=1)
+    p.rect(35, 700, 180, 100, fill=1)
+    p.rect(215, 750, 350, 50, fill=1)
+    p.drawImage(logo, 40, 710, 170, 82, mask='auto')
+
+    titulo = "<b>BIENES PÚBLICOS </b>"
+    subtitulo = "<b>RESPONSABILIDAD DE BIENES </b>"
+
+    pti = Paragraph(titulo, my_Style)
+    pti.wrap(410, 350)
+    pti.drawOn(p, 180, 770)
+
+    psub = Paragraph(subtitulo, my_Style)
+    psub.wrap(410, 350)
+    psub.drawOn(p, 180, 720)
+
+
+
+
+    p.showPage()
+    p.save()
+    
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f'rpu.pdf')
 
