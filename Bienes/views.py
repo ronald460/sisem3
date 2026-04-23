@@ -576,18 +576,19 @@ def etiquetas_bm_pdf(request):
     
     # Diccionario de colores por área
     colores_areas = {
-        "ADMINISTRACION": colors.HexColor('#FF930F'),
+        "Gerencia de Administración": colors.HexColor('#FF930F'),
         "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
         "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
-        "Divison de Informatica": colors.HexColor('#7D807D'),
-        "Div. Calidad Gest": colors.HexColor('#0707A5'),
+        "División de Informática": colors.HexColor('#7D807D'),
+        "Div. Calidad de Gest": colors.HexColor('#0707A5'),
         "Gerencia de Licores": colors.HexColor('#E30000FC'),
         "Gerencia General": colors.HexColor('#FFFFFFCC'),
         "Gerencia de Inmuebles": colors.HexColor('#ED11C3FC'),
         "Gerencia Juridica": colors.HexColor('#94077AFC'),
         "GADT": colors.HexColor('#0F7BFFFC'),
         "Gerencia de Recaudacion": colors.HexColor('#07F207CC'),
-        "Apostilla": colors.HexColor('#418676FF'),
+        "Departamento de Apostilla": colors.HexColor('#418676FF'),
+        "Gerencia de Prensa": colors.HexColor('#6A7507'),
         "Deposito": colors.HexColor('#870024FF'),
     }
     
@@ -629,7 +630,7 @@ def etiquetas_bm_pdf(request):
         p.setFillColor(color_texto)
         
         # Área (solo el nombre del área del encargado)
-        p.setFont("Helvetica-Bold", 11)
+        p.setFont("Helvetica-Bold", 10)
         p.drawString(x + 4, y + alto_etiqueta - 10, f"{area_nombre.upper()}")
         
         # Línea separadora
@@ -641,7 +642,7 @@ def etiquetas_bm_pdf(request):
         p.drawString(x + 5, y + alto_etiqueta - 40, f"BM: {bien.bm_worker}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
-        p.setFont("Helvetica", 10)
+        p.setFont("Helvetica", 8)
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
         p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
         
@@ -709,18 +710,19 @@ def etiquetas_ci_pdf(request):
     
     # Diccionario de colores por área
     colores_areas = {
-        "ADMINISTRACION": colors.HexColor('#FF930F'),
+        "Gerencia de Administracion": colors.HexColor('#FF930F'),
         "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
         "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
-        "Divison de Informatica": colors.HexColor('#7D807D'),
-        "Div. Calidad Gest": colors.HexColor('#0707A5'),
+        "División de Informatica": colors.HexColor('#7D807D'),
+        "Div. Calidad de Gest": colors.HexColor('#0707A5'),
         "Gerencia de Licores": colors.HexColor('#E30000FC'),
         "Gerencia General": colors.HexColor('#FFFFFFCC'),
         "Gerencia de Inmuebles": colors.HexColor('#ED11C3FC'),
         "Gerencia Juridica": colors.HexColor('#94077AFC'),
         "GADT": colors.HexColor('#0F7BFFFC'),
         "Gerencia de Recaudacion": colors.HexColor('#07F207CC'),
-        "Apostilla": colors.HexColor('#418676FF'),
+        "Departamento de Apostilla": colors.HexColor('#418676FF'),
+        "Gerencia de Prensa": colors.HexColor('#6A7507'),
         "Deposito": colors.HexColor('#870024FF'),
     }
     
@@ -762,7 +764,7 @@ def etiquetas_ci_pdf(request):
         p.setFillColor(color_texto)
         
         # Área (solo el nombre del área del encargado)
-        p.setFont("Helvetica-Bold", 11)
+        p.setFont("Helvetica-Bold", 10)
         p.drawString(x + 4, y + alto_etiqueta - 10, f"{area_nombre.upper()}")
         
         # Línea separadora
@@ -774,7 +776,7 @@ def etiquetas_ci_pdf(request):
         p.drawString(x + 5, y + alto_etiqueta - 40, f"{bien.bm}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
-        p.setFont("Helvetica", 10)
+        p.setFont("Helvetica", 8)
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
         p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
         
@@ -842,18 +844,19 @@ def etiquetas_pd_pdf(request):
     
     # Diccionario de colores por área
     colores_areas = {
-        "ADMINISTRACION": colors.HexColor('#FF930F'),
+        "Gerencia de Administracion": colors.HexColor('#FF930F'),
         "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
         "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
-        "Divison de Informatica": colors.HexColor('#7D807D'),
-        "Div. Calidad Gest": colors.HexColor('#0707A5'),
+        "División de Informatica": colors.HexColor('#7D807D'),
+        "Div. Calidad de Gest": colors.HexColor('#0707A5'),
         "Gerencia de Licores": colors.HexColor('#E30000FC'),
         "Gerencia General": colors.HexColor('#FFFFFFCC'),
         "Gerencia de Inmuebles": colors.HexColor('#ED11C3FC'),
         "Gerencia Juridica": colors.HexColor('#94077AFC'),
         "GADT": colors.HexColor('#0F7BFFFC'),
         "Gerencia de Recaudacion": colors.HexColor('#07F207CC'),
-        "Apostilla": colors.HexColor('#418676FF'),
+        "Departamento de Apostilla": colors.HexColor('#418676FF'),
+        "Gerencia de Prensa": colors.HexColor('#6A7507'),
         "Deposito": colors.HexColor('#870024FF'),
     }
     
@@ -895,7 +898,7 @@ def etiquetas_pd_pdf(request):
         p.setFillColor(color_texto)
         
         # Área (solo el nombre del área del encargado)
-        p.setFont("Helvetica-Bold", 11)
+        p.setFont("Helvetica-Bold", 10)
         p.drawString(x + 4, y + alto_etiqueta - 10, f"{area_nombre.upper()}")
         
         # Línea separadora
@@ -907,7 +910,7 @@ def etiquetas_pd_pdf(request):
         p.drawString(x + 5, y + alto_etiqueta - 40, f"{bien.bm}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
-        p.setFont("Helvetica", 10)
+        p.setFont("Helvetica", 8)
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
         p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
         

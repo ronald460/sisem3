@@ -90,7 +90,7 @@ def obtener_tasas_fallback():
 
 def Home(request):
     empleados = Empleado.objects.all().count()
-    bienes = Bienes.objects.all().count()
+    bienes = Bienes.objects.filter(activo = 'True').count()
 
     user = request.user
 
