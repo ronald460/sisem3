@@ -1,0 +1,95 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reportes</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/datatables.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/tooltip2.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/sweetalert.min.css' %}" />
+    <script src="/static/js/datatables.js"></script>
+    <script src="/static/js/sweetalert.min.js"></script>
+    <script src="/static/js/jquery-3.7.0.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {% if user.is_authenticated == 0 %}
+    <meta http-equiv="refresh" content="0;url={% url 'login' %}" />
+    {% endif %} {% if messages%} {% for m in messages %}
+    <script>
+      Swal.fire({
+        title: "Felicidades",
+        text: "{{m}}",
+        icon: "success",
+      });
+    </script>
+    {% endfor %} {% endif %} {% include 'header.html' %}
+    <main class="data-table">
+      <h1>Listado de Reportes</h1>
+
+      <table id="DataTable">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Nombres</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+      </table>
+    </main>
+    <script src="/static/js/datatables.js"></script>
+    <script>
+      $(document).ready(function () {
+        $("#DataTable").DataTable({
+          responsive: true,
+          dom: '<"table-options"<"lb-container"lB>fr>tip',
+          lengthMenu: [10, 25, 50, -1],
+          buttons: [],
+
+          ajax: "{% url 'lista_reportes' %}",
+          columns: [
+            { data: "id" },
+            { data: "nombre" },
+            {
+              data: null,
+              searchable: false,
+              orderable: false,
+              defaultContent:
+                "<button class='actions plus'><svg xmlns='http://www.w3.org/2000/svg' width='25' height='25' fill='currentColor' class='bi bi-search' viewBox='0 0 16 16'><path d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0'/></svg></button>",
+            },
+          ],
+          initComplete: function (settings, json) {
+            $("#DataTable tbody").delegate(
+              ".actions.plus",
+              "click",
+              function () {
+                var data = $("#DataTable")
+                  .DataTable()
+                  .row($(this).parents("tr"))
+                  .data();
+                var id = data.id;
+                window.location.href = "";
+              },
+            );
+          },
+          success: function (response) {
+            console.log("Datos recibidos:", response);
+          },
+          error: function (xhr, status, error) {
+            console.error("Error al recibir datos:", error);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

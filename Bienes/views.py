@@ -1,3 +1,5 @@
+from turtle import pd
+
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from django.shortcuts import render, redirect, get_object_or_404
 from .utils import get_empleados_por_area_usuario, get_user_role
@@ -16,6 +18,7 @@ from django.urls import reverse
 from .models import *
 from .forms import *
 import io
+import os
 
 def bienes(request):
 
@@ -610,6 +613,8 @@ def etiquetas_bm_pdf(request):
     
     contador = 0
     pagina_actual = 1
+    logo = ImageReader('static/image/semat_logo_bn.png')
+    
     
     def dibujar_etiqueta(p, x, y, bien, color_fondo, area_nombre):
         p.saveState()
@@ -638,13 +643,20 @@ def etiquetas_bm_pdf(request):
         p.line(x + 5, y + alto_etiqueta - 15, x + ancho_etiqueta - 5, y + alto_etiqueta - 15)
         
         # Número del bien (BM)
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(x + 5, y + alto_etiqueta - 40, f"BM: {bien.bm_worker}")
+        p.setFont("Helvetica-Bold", 8)
+        p.drawString(x + 5, y + alto_etiqueta - 68, f"BM: {bien.bm_worker}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
+<<<<<<< HEAD
         p.setFont("Helvetica", 8)
+=======
+        p.setFont("Helvetica-Bold", 8)
+>>>>>>> 180123f70330ae31b0712f6d75dd9fe3b55f25ea
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
-        p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
+        p.drawString(x + 5, y + 47, f"Resp: {nombre_empleado}")
+
+        p.setFillAlpha(0.5)
+        p.drawImage(logo, x + ancho_etiqueta - 160, y + 12, width=150, height=40, mask='auto')
         
         p.restoreState()
     
@@ -744,6 +756,7 @@ def etiquetas_ci_pdf(request):
     
     contador = 0
     pagina_actual = 1
+    logo = ImageReader('static/image/semat_logo_bn.png')
     
     def dibujar_etiqueta(p, x, y, bien, color_fondo, area_nombre):
         p.saveState()
@@ -772,13 +785,20 @@ def etiquetas_ci_pdf(request):
         p.line(x + 5, y + alto_etiqueta - 15, x + ancho_etiqueta - 5, y + alto_etiqueta - 15)
         
         # Número del bien (BM)
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(x + 5, y + alto_etiqueta - 40, f"{bien.bm}")
+        p.setFont("Helvetica-Bold", 8)
+        p.drawString(x + 5, y + alto_etiqueta - 68, f"{bien.bm}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
+<<<<<<< HEAD
         p.setFont("Helvetica", 8)
+=======
+        p.setFont("Helvetica-Bold", 8)
+>>>>>>> 180123f70330ae31b0712f6d75dd9fe3b55f25ea
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
-        p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
+        p.drawString(x + 5, y + 47, f"Resp: {nombre_empleado}")
+
+        p.setFillAlpha(0.5)
+        p.drawImage(logo, x + ancho_etiqueta - 160, y + 12, width=150, height=40, mask='auto')
         
         p.restoreState()
     
@@ -878,6 +898,7 @@ def etiquetas_pd_pdf(request):
     
     contador = 0
     pagina_actual = 1
+    logo = ImageReader('static/image/semat_logo_bn.png')
     
     def dibujar_etiqueta(p, x, y, bien, color_fondo, area_nombre):
         p.saveState()
@@ -906,13 +927,20 @@ def etiquetas_pd_pdf(request):
         p.line(x + 5, y + alto_etiqueta - 15, x + ancho_etiqueta - 5, y + alto_etiqueta - 15)
         
         # Número del bien (BM)
-        p.setFont("Helvetica-Bold", 12)
-        p.drawString(x + 5, y + alto_etiqueta - 40, f"{bien.bm}")
+        p.setFont("Helvetica-Bold", 8)
+        p.drawString(x + 5, y + alto_etiqueta - 68, f"{bien.bm}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
+<<<<<<< HEAD
         p.setFont("Helvetica", 8)
+=======
+        p.setFont("Helvetica-Bold", 8)
+>>>>>>> 180123f70330ae31b0712f6d75dd9fe3b55f25ea
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
-        p.drawString(x + 5, y + 8, f"Resp: {nombre_empleado}")
+        p.drawString(x + 5, y + 47, f"Resp: {nombre_empleado}")
+
+        p.setFillAlpha(0.5)
+        p.drawImage(logo, x + ancho_etiqueta - 160, y + 12, width=150, height=40, mask='auto')
         
         p.restoreState()
     
@@ -1088,3 +1116,37 @@ def rpu_pdf(request):
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=f'rpu.pdf')
 
+# --------------- reportes Excel --------------- # 
+
+def export_bienes_excel(request):
+    usuario_actual = request.user
+    rol = get_user_role(usuario_actual)
+
+    if rol == 'admin':
+        entity = Bienes_persona.objects.all()
+    elif rol[0] == 'encargado_bienes':
+        area = rol[1]
+        entity = Bienes_persona.objects.filter(area=area)
+    else:
+        entity = Bienes_persona.objects.filter(id_worker__user=usuario_actual)
+
+    data = []
+    for c in entity:
+        data.append({
+            'bm': c.bm_worker,
+            'descripcion': c.description,
+            'area': str(c.area.name) if c.area else '',
+            'funcionario': str(c.id_worker.names) if c.id_worker else '',
+            'condicion': c.condition.capitalize() if c.condition else '',
+            'observacion': c.observation or '',
+        })
+
+    df = pd.DataFrame(data)
+    
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+        df.to_excel(writer, index=False, sheet_name='Bienes')
+        writer.save()
+    
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='bienes.xlsx')
