@@ -135,7 +135,7 @@
           </div>
         </div>
         -->
-        <!-- MÓDULO 6: Reportes 
+        {% if perms.Bienes.change_bienes %}
         <div class="module-card">
           <span class="django-badge">apps.reportes</span>
           <div class="module-icon">
@@ -143,16 +143,16 @@
           </div>
           <div class="module-info">
             <h3>Reportes</h3>
-            <p>Estadísticas, gráficos y exportación de datos.</p>
+            <p>exportación de datos.</p>
             <div class="module-meta">
               <span class="module-badge">12 reportes</span>
-              <a href="#" class="module-link">
+              <a href="/reportes/" class="module-link">
                 Acceder <i class="bi bi-arrow-right"></i>
               </a>
             </div>
           </div>
         </div>
-        -->
+        {% endif %}
       </div>
     </main>
   </body>

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'Administracion',
     'Bienes',
     'Inmuebles',
+    'home',
 
 ]
 
