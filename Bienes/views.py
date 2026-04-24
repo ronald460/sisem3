@@ -647,13 +647,9 @@ def etiquetas_bm_pdf(request):
         p.drawString(x + 5, y + alto_etiqueta - 68, f"BM: {bien.bm_worker}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
-<<<<<<< HEAD
-        p.setFont("Helvetica", 8)
-=======
         p.setFont("Helvetica-Bold", 8)
->>>>>>> 180123f70330ae31b0712f6d75dd9fe3b55f25ea
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
-        p.drawString(x + 5, y + 47, f"Resp: {nombre_empleado}")
+        p.drawString(x + 5, y + 47, f"{nombre_empleado}")
 
         p.setFillAlpha(0.5)
         p.drawImage(logo, x + ancho_etiqueta - 160, y + 12, width=150, height=40, mask='auto')
@@ -722,7 +718,7 @@ def etiquetas_ci_pdf(request):
     
     # Diccionario de colores por área
     colores_areas = {
-        "Gerencia de Administracion": colors.HexColor('#FF930F'),
+        "Gerencia de Administración": colors.HexColor('#FF930F'),
         "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
         "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
         "División de Informatica": colors.HexColor('#7D807D'),
@@ -789,13 +785,9 @@ def etiquetas_ci_pdf(request):
         p.drawString(x + 5, y + alto_etiqueta - 68, f"{bien.bm}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
-<<<<<<< HEAD
-        p.setFont("Helvetica", 8)
-=======
         p.setFont("Helvetica-Bold", 8)
->>>>>>> 180123f70330ae31b0712f6d75dd9fe3b55f25ea
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
-        p.drawString(x + 5, y + 47, f"Resp: {nombre_empleado}")
+        p.drawString(x + 5, y + 47, f"{nombre_empleado}")
 
         p.setFillAlpha(0.5)
         p.drawImage(logo, x + ancho_etiqueta - 160, y + 12, width=150, height=40, mask='auto')
@@ -864,7 +856,7 @@ def etiquetas_pd_pdf(request):
     
     # Diccionario de colores por área
     colores_areas = {
-        "Gerencia de Administracion": colors.HexColor('#FF930F'),
+        "Gerencia de Administración": colors.HexColor('#FF930F'),
         "Gerencia de Fiscalizacion": colors.HexColor('#EBE412'),
         "Gerencia de Publicidad": colors.HexColor('#067B06CC'),
         "División de Informatica": colors.HexColor('#7D807D'),
@@ -931,13 +923,9 @@ def etiquetas_pd_pdf(request):
         p.drawString(x + 5, y + alto_etiqueta - 68, f"{bien.bm}")
         
         # Responsable del bien (nombre del empleado de la tabla Empleado)
-<<<<<<< HEAD
-        p.setFont("Helvetica", 8)
-=======
         p.setFont("Helvetica-Bold", 8)
->>>>>>> 180123f70330ae31b0712f6d75dd9fe3b55f25ea
         nombre_empleado = bien.id_worker.names if bien.id_worker else "No asignado"
-        p.drawString(x + 5, y + 47, f"Resp: {nombre_empleado}")
+        p.drawString(x + 5, y + 47, f"{nombre_empleado}")
 
         p.setFillAlpha(0.5)
         p.drawImage(logo, x + ancho_etiqueta - 160, y + 12, width=150, height=40, mask='auto')
