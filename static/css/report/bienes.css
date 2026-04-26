@@ -1,28 +1,28 @@
 .container {
   display: grid;
   padding: 10px;
-  grid-template-columns: 1fr 1.1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 8px 8px;
   grid-auto-flow: row;
   grid-template-areas:
-    "area area bienes bienes"
+    "condicion condicion tipo tipo"
     "button button button button";
 }
 
-label {
-  font-weight: bold;
+.title {
+  text-align: center;
   padding: 10px;
 }
 
-.area {
+.condicion {
   padding: 10px;
-  grid-area: area;
+  grid-area: condicion;
 }
 
-.bienes {
+.tipo {
   padding: 10px;
-  grid-area: bienes;
+  grid-area: tipo;
 }
 
 .button {
@@ -30,7 +30,7 @@ label {
   grid-area: button;
 }
 
-.title {
-  text-align: center;
+label {
+  font-weight: bold;
   padding: 10px;
 }

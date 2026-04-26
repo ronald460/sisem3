@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="{% static 'css/home.css' %}" />
-    <link rel="stylesheet" href="{% static 'css/report/bien_area.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/report/bienes.css' %}" />
     <link rel="stylesheet" href="{% static 'css/sweetalert.min.css' %}" />
     <script src="/static/js/datatables.js"></script>
     <script src="/static/js/sweetalert.min.js"></script>
@@ -18,7 +18,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
       rel="stylesheet"
     />
-    <title>Rep. Bienes x Area</title>
+    <title>Reporte Bienes</title>
   </head>
   <body>
     {% if user.is_authenticated == 0 %}
@@ -32,23 +32,23 @@
       });
     </script>
     {% endfor %} {% endif %} {% include 'header.html' %}
-    <h1 class="title">Reporte de Bienes por Area</h1>
-    <form action="{% url 'export_bxa_excel' %}" method="GET">
+    <h1 class="title">Reporte de Bienes</h1>
+    <form action="{% url 'export_bienes_excel' %}" method="GET">
       <div class="container">
-        <div class="area">
-          <label for="area">Selecciona un Area:</label>
-          <select name="area" id="area" class="form-select">
-            {% for area in area %}
-            <option value="{{ area.id }}">{{ area.name }}</option>
-            {% endfor %}
+        <div class="condicion">
+          <label for="">Seleccione un Status:</label>
+          <select name="status" id="status" class="form-select">
+            <option value="all">Todos</option>
+            <option value="Completo">Completo</option>
+            <option value="Incompleto">Incompleto</option>
           </select>
         </div>
-        <div class="bienes">
-          <label for="bienes">Selecciona un Tipo:</label>
-          <select name="bienes" id="bienes" class="form-select">
-            <option value="bm">Bienes Semat</option>
-            <option value="ci">Control Interno</option>
-            <option value="pd">Procedencia Desconocida</option>
+        <div class="tipo">
+          <label for="">Seleccione una Condicion:</label>
+          <select name="condicion" id="condicion" class="form-select">
+            <option value="all">Todos</option>
+            <option value="Bueno">Bueno</option>
+            <option value="Dañado">Dañado</option>
           </select>
         </div>
         <div class="button">

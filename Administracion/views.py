@@ -1,12 +1,13 @@
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from Bienes.models import *
 from Bienes.utils import get_user_role
 from django.http import JsonResponse
 from django.contrib import messages
 from django.core.cache import cache
 from datetime import date
+from Bienes.models import *
+from home.models import *
 from .models import *
 from .forms import *
 import requests
@@ -91,6 +92,8 @@ def obtener_tasas_fallback():
 def Home(request):
     empleados = Empleado.objects.all().count()
     bienes = Bienes.objects.filter(activo = 'True').count()
+    reporte = Reporte.objects.all().count()
+
 
     user = request.user
 
@@ -102,6 +105,7 @@ def Home(request):
         'euro': tasas.get('euro', 'No disponible'),
         'dolar': tasas.get('dolar', 'No disponible'),
         'user': user,
+        'reporte': reporte,
     }
     return render(request, 'home.html', context)
 
