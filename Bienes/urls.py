@@ -22,9 +22,16 @@ urlpatterns = [
     path('rpu_pdf/', views.rpu_pdf, name='rpu_pdf'),
     
 
+    #--------------Reportes Bienes-----------------------
+    path('reporte_bxa_excel/', views.reporte_bxa_excel, name='reporte_bxa_excel'),
+    path('export_bxa_excel/', export_bxa_excel.as_view(), name='export_bxa_excel'),
+    path('reporte_bienes_excel/', views.reporte_bienes_excel, name='reporte_bienes_excel'),
+    path('export_bienes_excel/', export_bienes_excel.as_view(), name='export_bienes_excel'),
 
 
-    #--------------Bienes-----------------------
+
+
+    #--------------Listado Bienes-----------------------
     path('listado_bienes/', views.lista_bienes, name='lista_bienes'),
     path('listado_bienes_det/', views.lista_bienes_det, name='lista_bienes_det'),
     path('listado_bienes_asignados/', views.listado_bienes_det, name='lista_bienes_asignados'),

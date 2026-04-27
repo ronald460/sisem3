@@ -1,10 +1,9 @@
-from turtle import pd
-
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from django.http import JsonResponse, FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .utils import get_empleados_por_area_usuario, get_user_role
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, FileResponse
+from django.views.generic.base import TemplateView
 from reportlab.lib.utils import ImageReader
 from reportlab.lib.colors import HexColor
 from reportlab.platypus import Paragraph
@@ -15,6 +14,9 @@ from django.contrib import messages
 from datetime import date, datetime
 from reportlab.lib import colors
 from django.urls import reverse
+from openpyxl import workbook
+from turtle import pd
+import xlwt
 from .models import *
 from .forms import *
 import io
@@ -1106,35 +1108,179 @@ def rpu_pdf(request):
 
 # --------------- reportes Excel --------------- # 
 
-def export_bienes_excel(request):
-    usuario_actual = request.user
-    rol = get_user_role(usuario_actual)
 
-    if rol == 'admin':
-        entity = Bienes_persona.objects.all()
-    elif rol[0] == 'encargado_bienes':
-        area = rol[1]
-        entity = Bienes_persona.objects.filter(area=area)
+def reporte_bxa_excel(request):
+
+    responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+
+    if request.user.is_superuser:
+        area = Departamento.objects.all()
     else:
-        entity = Bienes_persona.objects.filter(id_worker__user=usuario_actual)
+        responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
+        if responsable:
+            area = Departamento.objects.filter(id = responsable.area)  # Solo su área
+       
 
-    data = []
-    for c in entity:
-        data.append({
-            'bm': c.bm_worker,
-            'descripcion': c.description,
-            'area': str(c.area.name) if c.area else '',
-            'funcionario': str(c.id_worker.names) if c.id_worker else '',
-            'condicion': c.condition.capitalize() if c.condition else '',
-            'observacion': c.observation or '',
-        })
+    context = {
+        'responsable': responsable,
+        'is_admin': request.user.is_superuser,
+        'area': area,
+    }
 
-    df = pd.DataFrame(data)
+    return render(request, 'reportes/bienes_area.html', context)
+
+class export_bxa_excel(TemplateView):
     
-    buffer = io.BytesIO()
-    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        df.to_excel(writer, index=False, sheet_name='Bienes')
-        writer.save()
-    
-    buffer.seek(0)
-    return FileResponse(buffer, as_attachment=True, filename='bienes.xlsx')
+    def get(self, request, *args, **kwargs):
+        # CORREGIDO: Obtener los parámetros correctamente
+        area_id = request.GET.get('area')  # 'area' no 'area_id'
+        tipo = request.GET.get('bienes')   # 'bienes' está bien
+        
+        # Validar que se recibieron los parámetros
+        if not area_id or not tipo:
+            return HttpResponse("Faltan parámetros requeridos", status=400)
+        
+        area = get_object_or_404(Departamento, id=area_id)
+        
+        # Crear respuesta
+        nombre_archivo = f"Lista-bienes-{tipo}-{area.name}.xls"
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
+        
+        # Usar xlwt consistentemente (no mezcles con openpyxl)
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Bienes por área')
+        
+        # Estilos
+        header_style = xlwt.XFStyle()
+        header_style.font.bold = True
+        header_style.pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+        header_style.pattern.pattern_fore_colour = 22  # Gris claro
+        
+        cell_style = xlwt.XFStyle()
+        
+        # Escribir encabezados
+        headers = ['BM', 'Descripción', 'Área', 'Funcionario', 'Condición', 'Observación']
+        for col, header in enumerate(headers):
+            ws.write(0, col, header, header_style)
+        
+        # Obtener datos según tipo
+        if tipo == 'bm':
+            from .models import Bienes_persona  # Ajusta el import
+            bienes = Bienes_persona.objects.filter(area=area)
+            
+        elif tipo == 'ci':
+            from .models import otros_bienes_ci  # Ajusta el import
+            bienes = otros_bienes_ci.objects.filter(area=area)
+            
+        elif tipo == 'pd':
+            from .models import otros_bienes_pd  # Ajusta el import
+            bienes = otros_bienes_pd.objects.filter(area=area)
+            
+        else:
+            return HttpResponse("Tipo de bien no válido", status=400)
+        
+        # Escribir datos
+        row_num = 1
+        for bien in bienes:
+            ws.write(row_num, 0, getattr(bien, 'bm', getattr(bien, 'bm_worker', '')), cell_style)
+            ws.write(row_num, 1, bien.description or '', cell_style)
+            ws.write(row_num, 2, bien.area.name if hasattr(bien, 'area') and bien.area else '', cell_style)
+            ws.write(row_num, 3, bien.id_worker.names if hasattr(bien, 'id_worker') and bien.id_worker else '', cell_style)
+            ws.write(row_num, 4, bien.condition.capitalize() if bien.condition else '', cell_style)
+            ws.write(row_num, 5, bien.observation or '', cell_style)
+            row_num += 1
+        
+        # Ajustar ancho de columnas
+        for col in range(len(headers)):
+            ws.col(col).width = 5000
+        
+        # Guardar y retornar
+        wb.save(response)
+        return response
+
+def reporte_bienes_excel(request):
+
+    return render(request, 'reportes/bienes.html')
+
+class export_bienes_excel(TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        condicion = request.GET.get('condicion')
+        status = request.GET.get('status')
+
+        
+        if not condicion or not status:
+            return HttpResponse("Faltan parámetros requeridos", status=400)
+        
+        nombre_archivo = f"Lista-bienes-{condicion}-{status}.xls"
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}"'
+        
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Bienes')
+        
+        header_style = xlwt.XFStyle()
+        header_style.font.bold = True
+        header_style.pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+        header_style.pattern.pattern_fore_colour = 22
+        
+        cell_style = xlwt.XFStyle()
+        
+        headers = ['BM', 'Descripción', 'Status', 'Condición']
+        for col, header in enumerate(headers):
+            ws.write(0, col, header, header_style)
+        
+        if condicion == 'Bueno' and status == 'Completo':
+            
+            bienes = Bienes.objects.filter(condition='Completo', status='Bueno', activo=True)
+
+        elif condicion == 'Dañado' and status == 'Completo':
+            
+            bienes = Bienes.objects.filter(condition='Completo', status='Dañado', activo=True)
+
+        elif condicion == 'Bueno' and status == 'Incompleto':
+            
+            bienes = Bienes.objects.filter(condition='Incompleto', status='Bueno', activo=True)
+
+        elif condicion == 'Dañado' and status == 'Incompleto':
+            
+            bienes = Bienes.objects.filter(condition='Incompleto', status='Dañado', activo=True)
+
+        elif condicion == 'all' and status == 'Incompleto':
+
+            bienes = Bienes.objects.filter(condition='Incompleto', activo=True)
+
+        elif condicion == 'all' and status == 'Completo':
+
+            bienes = Bienes.objects.filter(condition='Completo', activo=True)
+
+        elif condicion == 'Bueno' and status == 'all':
+
+            bienes = Bienes.objects.filter(status='Bueno', activo=True)
+
+        elif condicion == 'Dañado' and status == 'all':
+
+            bienes = Bienes.objects.filter(status='Dañado', activo=True)
+
+        elif condicion == 'all' and status == 'all':
+
+            bienes = Bienes.objects.filter(activo=True)
+            
+        else:
+            return HttpResponse("Error", status=400)
+        
+        row_num = 1
+        for bien in bienes:
+            ws.write(row_num, 0, getattr(bien, 'bm', getattr(bien, 'bm_worker', '')), cell_style)
+            ws.write(row_num, 1, bien.description or '', cell_style)
+            ws.write(row_num, 2, bien.status.capitalize() if bien.status else '', cell_style)
+            ws.write(row_num, 3, bien.condition.capitalize() if bien.condition else '', cell_style)
+            row_num += 1
+        
+        for col in range(len(headers)):
+            ws.col(col).width = 5000
+
+        wb.save(response)
+        return response
+
