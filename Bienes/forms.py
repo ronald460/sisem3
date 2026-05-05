@@ -8,7 +8,7 @@ class addBien_form(forms.ModelForm):
                   'brand', 'condition', 'signature', 'observation']
         widgets = {
             'area': forms.Select(attrs={'class': 'form-select'}),
-            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true'}),
+            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true' 'required'}),
             'bm_worker': forms.TextInput(attrs={'class': 'form-control'}),
             'serial': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.TextInput(attrs={'class': 'form-control'}),
@@ -31,7 +31,7 @@ class OtroBienPd_form(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'serial': forms.TextInput(attrs={'class': 'form-control'}),
-            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true'}),
+            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true' 'required'}),
             'area': forms.Select(attrs={'class': 'form-select'}),
             'observation': forms.TextInput(attrs={'class': 'form-control'}),
          }
@@ -48,9 +48,9 @@ class OtroBienCi_form(forms.ModelForm):
 
         widgets = {
             'bm': forms.TextInput(attrs={'class': 'form-control', 'id': 'bm'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3,}),
             'serial': forms.TextInput(attrs={'class': 'form-control'}),
-            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true'}),
+            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true' 'required'}),
             'area': forms.Select(attrs={'class': 'form-select'}),
             'observation': forms.TextInput(attrs={'class': 'form-control'}),
          }
