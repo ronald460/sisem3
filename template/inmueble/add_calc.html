@@ -1,0 +1,232 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/form/calc_inm.css' %}" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <title>Generar Calculo</title>
+  </head>
+  <body>
+    {% if user.is_authenticated == 0 %}
+    <meta http-equiv="refresh" content="0;url={% url 'login' %}" />
+    {% endif %} {% if messages%} {% for m in messages %}
+    <script>
+      Swal.fire({
+        title: "Felicidades",
+        text: "{{m}}",
+        icon: "success",
+      });
+    </script>
+    {% endfor %} {% endif %} {% include 'header.html' %}
+    <h1 class="title">Generar Cálculo</h1>
+    <form action="">
+      <div class="container">
+        <div class="sap">
+          <h6>Codigo Sap</h6>
+          <input
+            type="text"
+            name="sap"
+            id="sap"
+            placeholder="Codigo Sap"
+            class="form-control"
+          />
+        </div>
+        <div class="cast">
+          <h6>Codigo Cast</h6>
+          <input
+            type="text"
+            name="cast"
+            id="cast"
+            placeholder="Codigo Cast"
+            class="form-control"
+          />
+        </div>
+        <div class="period">
+          <h6>Periodo</h6>
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-1"
+            name="periodos"
+            value="2025"
+            autocomplete="off"
+          />
+          <label class="btn" for="btn-check-1">2025</label>
+
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-2"
+            name="periodos"
+            value="2024"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn" for="btn-check-2">2024</label>
+
+          <input
+            type="checkbox"
+            class="btn-check"
+            name="periodos"
+            id="btn-check-3"
+            value="2023"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn" for="btn-check-3">2023</label>
+
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-4"
+            name="periodos"
+            value="2022"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn" for="btn-check-4">2022</label>
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-5"
+            name="periodos"
+            value="2021"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn" for="btn-check-5">2021</label>
+
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-6"
+            name="periodos"
+            value="2020"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn" for="btn-check-6">2020</label>
+
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-7"
+            name="periodos"
+            value="2019"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn" for="btn-check-7">2019</label>
+        </div>
+        <div class="sector">
+          <h6>Sector</h6>
+          <input
+            type="text"
+            name="sector"
+            id="sector"
+            placeholder="Sector"
+            class="form-control"
+          />
+        </div>
+        <div class="m_sect">
+          <h6>Metros del Sector</h6>
+          <input
+            type="text"
+            name="m_sect"
+            id="m_sect"
+            placeholder="Sub Sector"
+            class="form-control"
+          />
+        </div>
+        <div class="typo_1">
+          <h6>Tipologia 1 de Inmueble</h6>
+          <select name="typo_1" id="typo_1" class="form-select">
+            {% include 'inmueble/tipologia.html' %}
+          </select>
+        </div>
+        <div class="m_typo_1">
+          <h6>Metros de la Tipologia 1</h6>
+          <input
+            type="text"
+            name="m_typo_1"
+            id="m_typo_1"
+            placeholder="Metros de la Tipologia_1"
+            class="form-control"
+          />
+        </div>
+        <div class="typo_2">
+          <h6>Tipologia 2 de Inmueble</h6>
+          <select name="typo_2" id="typo_2" class="form-select">
+            {% include 'inmueble/tipologia.html' %}
+          </select>
+        </div>
+        <div class="m_typo_2">
+          <h6>Metros de la Tipologia 2</h6>
+          <input
+            type="text"
+            name="m_typo_2"
+            id="m_typo_2"
+            placeholder="Metros de la Tipologia_2"
+            class="form-control"
+          />
+        </div>
+        <div class="generar">
+          <button type="submit" class="btn btn-primary">Generar</button>
+        </div>
+        <div class="cancelar">
+          <button type="button" class="btn btn-secondary">Cancelar</button>
+        </div>
+      </div>
+    </form>
+
+    {% if resultados %}
+    <h3 class="title">Resultados por periodo:</h3>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Periodo</th>
+          <th>Impuesto</th>
+          <th>Recargos</th>
+          <th>Multa</th>
+          <th>Intereses</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for periodo, datos in resultados.items %}
+        <tr>
+          <td>{{ periodo }}</td>
+          <td>{{ datos.tax }}</td>
+          <td>{{ datos.recar }}</td>
+          <td>{{ datos.mult }}</td>
+          <td>{{ datos.inter }}</td>
+          <td><strong>{{ datos.total }}</strong></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <form action="" method="post" style="margin-top: 20px">
+      {% csrf_token %}
+      <input type="hidden" name="cod_sap" value="{{ request.GET.cod_sap }}" />
+      <input type="hidden" name="cod_cast" value="{{ request.GET.cod_cast }}" />
+      <button type="submit" name="imprimir_pdf" class="btn btn-primary">
+        🖨️ Generar PDF
+      </button>
+    </form>
+    {% endif %}
+
+    <script src="/static/js/form/decimales.js"></script>
+  </body>
+</html>

@@ -144,3 +144,7 @@ SESSION_EXPIRE_SECONDS = 28800
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# OPENWA_API_URL = "http://localhost:2785/api"
+# OPENWA_API_KEY = "dev-admin-key"
+# OPENWA_SESSION_ID = "a010f011-ccf0-46da-bcca-79b41a5e864b"
+

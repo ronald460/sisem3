@@ -7,7 +7,7 @@ from django.views.generic.base import TemplateView
 from reportlab.lib.utils import ImageReader
 from reportlab.lib.colors import HexColor
 from reportlab.platypus import Paragraph
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, legal, landscape
 from reportlab.lib.units import cm, mm
 from reportlab.pdfgen import canvas
 from django.contrib import messages
@@ -564,6 +564,8 @@ def delete_bien_ci(request, id):
         messages.error(request, f"Error al eliminar el bien: {str(e)}")
     return redirect('bienes_ci')
 
+#------------- Formatos PDF -------------#
+
 def etiquetas_bm_pdf(request):
     responsable = encargado_bienes.objects.filter(id_worker=request.user).first()
     
@@ -1106,6 +1108,213 @@ def rpu_pdf(request):
     buffer.seek(0)
     return FileResponse(buffer, as_attachment=True, filename=f'rpu.pdf')
 
+
+
+def bm2_pdf(request):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=landscape(legal))
+
+
+    p.setFont("Times-Bold", 12)
+    
+    p.rect(30, 550, 950, 20)
+    p.rect(30, 30, 950, 520)
+    p.drawString(35, 555, "RELACION DEL MOVIMIENTO DE BIENES MUEBLES")
+    p.drawString(500, 555, "FORMULARIO BM-2")
+    p.drawString(800, 555, "HOJA  Nº.    1")
+    p.drawString(35, 535, "1. ESTADO: LARA")
+    p.drawString(35, 520, "2. DISTRITO:")
+    p.drawString(35, 505, "3. MUNICIPIO: IRIBARREN")
+    p.drawString(35, 490, "4. DIRECCION O LUGAR: CALLE 25 ENTRE CARRERAS 17 Y 18.")
+    p.drawString(35, 475, "5. DEPENDENCIA O UNIDAD PRIMARIA: ")
+    p.drawString(35, 460, "6. SERVICIO:")
+    p.drawString(35, 445, "7. UNIDAD DE TRABAJO O DEPENDENCIA:")
+    p.drawString(35, 430, "8. PERIODO DE LA CUENTA (MES Y AÑO)")
+
+    p.setFont("Times-Roman", 12)
+
+    p.drawString(650, 520, "Formulario Nro. ")
+
+    p.setFont("Times-Bold", 12)
+    p.rect(30, 400, 950, 20)
+    p.drawString(115, 405, "EN EL MES DE LA CUENTA HA OCURRIDO EL SIGUIENTE MOVIMIENTO EN LOS BIENES A CARGO DE ESTA DEPENDENCIA.")
+
+    p.rect(30, 360, 950, 40)
+    p.rect(30, 385, 150, 15)
+    p.rect(30, 30, 50, 355)
+    p.rect(80, 30, 50, 355)
+    p.rect(130, 30, 50, 355)
+
+    p.setFont("Times-Bold", 10)
+    p.drawString(60, 390, "CLASIFICACION")
+    p.setFont("Times-Bold", 8)
+    p.drawString(40, 370, "GRUPO")
+    p.drawString(82, 370, "SUBGRUPO")
+    p.drawString(136, 370, "SECCION")
+
+    p.rect(180, 30, 60, 370)
+    p.rect(240, 30, 60, 370)
+    p.rect(300, 30, 60, 370)
+
+    p.drawString(185, 385, "CONCEPTO")
+    p.drawString(200, 375, "DE")
+    p.drawString(182, 365, "MOVIMIENTO")
+
+    p.drawString(247, 375, "CANTIDAD")
+
+    p.drawString(314, 385, "NUMERO")
+    p.drawString(325, 375, "DE")
+    p.drawString(310, 365, "IDENTIFIC.")
+    
+
+    p.rect(880, 375, 100, 25)
+    p.rect(780, 375, 100, 25)
+    p.rect(780, 360, 200, 15)
+
+    p.rect(880, 30, 100, 330)
+    p.rect(780, 30, 100, 330)
+
+    p.setFont("Times-Bold", 8)
+    p.drawString(790, 390, "INCORPORACIONES")
+    p.drawString(830, 380, "Bs.")
+    p.drawString(882, 390, "DESINCORPORACIONES")
+    p.drawString(930, 380, "Bs.")
+
+    p.drawString(820, 365, "CIFRAS CONVENCIONALES")
+    
+    p.setFont("Times-Bold", 9)
+    p.drawString(380, 385, "NOMBRE Y DESCRIPCION DE LOS BIENES REFERENCIA DE LOS COMPROBANTES")
+    p.drawString(475, 370, "Y DE LOS PRECIOS UNITARIOS")
+
+
+    p.setFont("Times-Roman", 8)
+
+    p.line(375, 95, 500, 95)
+    p.line(630, 95, 755, 95)
+
+    p.drawString(375, 85, "JEFE DE LA UNIDAD DE TRABAJO")
+    p.drawString(640, 85, "ENCARGADO DE  BIENES")
+    p.drawString(375, 75, "ING. RONALD GIMENEZ")
+    p.drawString(640, 75, "LCDO. BRAIAN SUAREZ")
+    p.drawString(375, 65, "C.I. V-10.779.050")
+    p.drawString(640, 65, "C.I. V-10.779.051")
+
+
+    p.setFont("Times-Roman", 10)
+    p.drawString(690, 35, "Total General………")
+
+
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f'bm2.pdf')
+
+def transf_pdf(request):
+
+    my_Style = getSampleStyleSheet()
+    my_Style=ParagraphStyle('My Para style',
+        fontName='Times-Roman',
+        fontSize=12,
+        borderWidth=0,
+        leading=15,
+        alignment = 1,
+        stikeGap = 1,
+        strikeOffset = 0.25,
+        endDots = None,
+        borderPadding= 0,
+    )
+
+    my_Style2 = getSampleStyleSheet()
+    my_Style2=ParagraphStyle('My Para style2',
+        fontName='Times-Roman',
+        fontSize=18,
+        borderWidth=0,
+        leading=15,
+        alignment = 1,
+        stikeGap = 1,
+        strikeOffset = 0.25,
+        endDots = None,
+        borderPadding= 0,
+    )
+
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer, pagesize=landscape(legal))
+
+    logo = ImageReader('static/image/semat_logo.png')
+    logo2 = ImageReader('static/image/semat_logo_bn.png')
+
+    p.drawImage(logo, 80, 500, 170, 82, mask='auto')
+    p.drawImage(logo2, 730, 500, 170, 82, mask='auto')
+
+    membrete = '<b>REPÚBLICA BOLIVARIANA DE VENEZUELA <br/> ALCALDÍA DEL MUNICIPIO IRIBARREN <br/> DIRECCIÓN DE ADMINISTRACIÒN Y FINANZAS <br/> COORDINACION DE BIENES MUNICIPALES </b>'
+
+    titulo = "<b>PLANILLA DE TRANSFERENCIA INTERNA DE BIENES</b>"
+
+    p.rect(30, 30, 950, 400)
+    p.rect(30, 410, 950, 20)
+    p.rect(830, 410, 150, 20)
+    p.rect(30, 410, 400, 20)
+
+    #-------------------------------------
+
+    p.rect(30, 370, 950, 40)
+    p.rect(30, 370, 400, 40)
+    p.rect(430, 370, 400, 40)
+
+    p.rect(30, 390, 300, 20)
+    p.rect(330, 370, 100, 40)
+
+
+    #--------------------------------------
+
+    p.rect(30, 30, 600, 100)
+    p.rect(630, 30, 350, 100)
+    p.rect(630, 110, 350, 20)
+    p.rect(30, 30, 300, 50)
+    p.rect(330, 80, 300, 50)
+
+    #-------------------------------------- 
+
+    p.rect(30, 130, 75, 260)
+    p.rect(105, 130, 75, 260)
+    p.rect(180, 130, 75, 260)
+    p.rect(330, 130, 100, 240)
+
+    p.rect(830, 110, 150, 260)
+    
+    
+
+    p.setFont("Times-Bold", 10)
+
+    p.drawString(35, 420, "(1) DE:")
+    p.drawString(435, 420, "(2) PARA:")
+    p.drawString(835, 420, "(3) FECHA:")
+
+
+
+    p.drawString(160, 395, "CODIGO")
+    p.drawString(560, 385, "DESCRIPCION DE LOS BIENES")
+    p.drawString(845, 385, "MONTO EN BOLIVARES")
+    p.drawString(347, 395, "CODIGO DE")
+    p.drawString(340, 385, "IDENTIFICACION")
+    
+
+    pti2 = Paragraph(membrete, my_Style)
+    pti2.wrap(950, 530) 
+    pti2.drawOn(p, 35, 500)
+
+    pti = Paragraph(titulo, my_Style2)
+    pti.wrap(950, 530)
+    pti.drawOn(p, 35, 460)
+
+    
+    p.showPage()
+    p.save()
+
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename=f'transferencia.pdf')
+
 # --------------- reportes Excel --------------- # 
 
 
@@ -1284,3 +1493,8 @@ class export_bienes_excel(TemplateView):
         wb.save(response)
         return response
 
+
+
+def prueba(request):
+
+    return render (request, 'act_econ/tax.html')

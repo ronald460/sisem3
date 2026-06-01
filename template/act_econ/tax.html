@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Selectores Anidados con Formularios</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .year-selector {
+        margin-bottom: 30px;
+      }
+
+      .year-selector select {
+        padding: 10px;
+        font-size: 16px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        width: 200px;
+      }
+
+      .months-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+      }
+
+      .month-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        background: #fafafa;
+        transition: all 0.3s;
+      }
+
+      .month-card.selected {
+        background: #fff3e0;
+        border-color: #ff9800;
+      }
+
+      .month-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+      }
+
+      .month-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .month-checkbox {
+        transform: scale(1.2);
+        cursor: pointer;
+      }
+
+      .month-checkbox:checked + .month-name {
+        color: #ff9800;
+      }
+
+      .base-items {
+        margin-top: 10px;
+      }
+
+      .base-item {
+        background: white;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #e8e8e8;
+      }
+
+      .base-item-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+
+      .base-checkbox {
+        cursor: pointer;
+      }
+
+      .base-input {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .base-input:focus {
+        outline: none;
+        border-color: #ff9800;
+      }
+
+      .base-label {
+        font-size: 12px;
+        color: #666;
+        margin-left: 25px;
+      }
+
+      button {
+        background: #4caf50;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+      }
+
+      button:hover {
+        background: #45a049;
+      }
+
+      .data-preview {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f0f0f0;
+        border-radius: 5px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Selector de Años con Formularios Mensuales</h2>
+
+      <!-- Selector de años -->
+      <div class="year-selector">
+        <label for="yearSelect">Seleccionar Año:</label>
+        <select id="yearSelect">
+          <option value="">-- Seleccione un año --</option>
+          <option value="2019">2019</option>
+          <option value="2020">2020</option>
+          <option value="2021">2021</option>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
+      <!-- Contenedor de meses -->
+      <div id="monthsContainer" class="months-container"></div>
+
+      <button onclick="guardarDatos()">Guardar Datos Seleccionados</button>
+
+      <!-- Vista previa de datos guardados -->
+      <div id="dataPreview" class="data-preview"></div>
+    </div>
+
+    <script>
+      // Nombres de los meses
+      const meses = [
+        { id: 1, nombre: "Enero", codigo: "ENE" },
+        { id: 2, nombre: "Febrero", codigo: "FEB" },
+        { id: 3, nombre: "Marzo", codigo: "MAR" },
+        { id: 4, nombre: "Abril", codigo: "ABR" },
+        { id: 5, nombre: "Mayo", codigo: "MAY" },
+        { id: 6, nombre: "Junio", codigo: "JUN" },
+        { id: 7, nombre: "Julio", codigo: "JUL" },
+        { id: 8, nombre: "Agosto", codigo: "AGO" },
+        { id: 9, nombre: "Septiembre", codigo: "SEP" },
+        { id: 10, nombre: "Octubre", codigo: "OCT" },
+        { id: 11, nombre: "Noviembre", codigo: "NOV" },
+        { id: 12, nombre: "Diciembre", codigo: "DIC" },
+      ];
+
+      // Datos de bases imponibles para cada mes
+      const basesImpuestos = [
+        { id: "base1", nombre: "Base Imponible General" },
+        { id: "base2", nombre: "Base Imponible Reducida" },
+        { id: "base3", nombre: "Base Imponible Especial" },
+        { id: "base4", nombre: "Base Adicional" },
+      ];
+
+      let datosSeleccionados = {};
+
+      // Generar formularios para los meses
+      function generarFormularioMes(monthData, year) {
+        const mesId = `${year}_${monthData.id}`;
+
+        // Crear contenedor del mes
+        const monthDiv = document.createElement("div");
+        monthDiv.className = "month-card";
+        monthDiv.id = `month_${mesId}`;
+        monthDiv.dataset.mesId = monthData.id;
+        monthDiv.dataset.ano = year;
+
+        // Cabecera del mes con checkbox general
+        monthDiv.innerHTML = `
+                <div class="month-header">
+                    <div>
+                        <input type="checkbox" class="month-checkbox" id="checkbox_${mesId}" data-mes-id="${mesId}">
+                        <label for="checkbox_${mesId}" class="month-name">${monthData.nombre}</label>
+                    </div>
+                    <span style="font-size: 12px; color: #999;">${year}</span>
+                </div>
+                <div class="base-items" id="bases_${mesId}">
+                    ${generarBasesImponibles(mesId)}
+                </div>
+            `;
+
+        // Agregar eventos
+        const monthCheckbox = monthDiv.querySelector(".month-checkbox");
+        monthCheckbox.addEventListener("change", (e) => {
+          handleMonthCheckboxChange(mesId, e.target.checked);
+        });
+
+        return monthDiv;
+      }
+
+      // Generar HTML de bases imponibles
+      function generarBasesImponibles(mesId) {
+        let html = "";
+        basesImpuestos.forEach((base) => {
+          const baseId = `${mesId}_${base.id}`;
+          html += `
+                    <div class="base-item">
+                        <div class="base-item-header">
+                            <input type="checkbox" class="base-checkbox" id="checkbox_${baseId}" data-base-id="${baseId}">
+                            <input type="number" class="base-input" id="input_${baseId}" 
+                                   placeholder="${base.nombre}" step="0.01">
+                        </div>
+                        <div class="base-label">${base.nombre}</div>
+                    </div>
+                `;
+        });
+        return html;
+      }
+
+      // Manejar cambio en checkbox del mes
+      function handleMonthCheckboxChange(mesId, isChecked) {
+        // Marcar/desmarcar todas las bases del mes
+        const monthDiv = document.getElementById(`month_${mesId}`);
+        const baseCheckboxes = monthDiv.querySelectorAll(".base-checkbox");
+        const baseInputs = monthDiv.querySelectorAll(".base-input");
+
+        baseCheckboxes.forEach((checkbox) => {
+          checkbox.checked = isChecked;
+          if (isChecked) {
+            // Si se marca el mes, también se marcan las bases que tienen valor
+            const inputId = checkbox.id.replace("checkbox_", "input_");
+            const input = document.getElementById(inputId);
+            if (input && input.value) {
+              checkbox.checked = true;
+            }
+          }
+        });
+
+        // Resaltar el mes si está seleccionado
+        if (isChecked) {
+          monthDiv.classList.add("selected");
+        } else {
+          monthDiv.classList.remove("selected");
+          // Desmarcar todas las bases
+          baseCheckboxes.forEach((checkbox) => (checkbox.checked = false));
+        }
+      }
+
+      // Inicializar eventos para inputs de bases
+      function inicializarEventosBases() {
+        // Usar event delegation para inputs dinámicos
+        document.addEventListener("input", (e) => {
+          if (e.target.classList.contains("base-input")) {
+            const input = e.target;
+            const inputId = input.id;
+            const checkboxId = inputId.replace("input_", "checkbox_");
+            const checkbox = document.getElementById(checkboxId);
+
+            // Marcar automáticamente el checkbox si se escribe en el input
+            if (input.value && input.value !== "") {
+              if (checkbox) checkbox.checked = true;
+
+              // También marcar el checkbox del mes si no está marcado
+              const mesId = inputId.split("_").slice(0, -1).join("_");
+              const monthCheckbox = document.getElementById(
+                `checkbox_${mesId}`,
+              );
+              if (monthCheckbox && !monthCheckbox.checked) {
+                monthCheckbox.checked = true;
+                handleMonthCheckboxChange(mesId, true);
+              }
+            } else {
+              // Si el input está vacío, desmarcar
+              if (checkbox) checkbox.checked = false;
+            }
+          }
+        });
+      }
+
+      // Cargar meses según el año seleccionado
+      function cargarMeses(year) {
+        const container = document.getElementById("monthsContainer");
+        container.innerHTML = "";
+
+        if (!year) return;
+
+        meses.forEach((mes) => {
+          const monthForm = generarFormularioMes(mes, year);
+          container.appendChild(monthForm);
+        });
+
+        // Inicializar datos guardados si existen
+        if (datosSeleccionados[year]) {
+          restaurarDatos(year);
+        }
+      }
+
+      // Restaurar datos guardados
+      function restaurarDatos(year) {
+        const datos = datosSeleccionados[year];
+        for (const mesId in datos) {
+          const mesData = datos[mesId];
+          const monthCheckbox = document.getElementById(`checkbox_${mesId}`);
+          if (monthCheckbox && mesData.seleccionado) {
+            monthCheckbox.checked = true;
+            handleMonthCheckboxChange(mesId, true);
+
+            // Restaurar valores de bases
+            for (const baseId in mesData.bases) {
+              const baseCheckbox = document.getElementById(
+                `checkbox_${baseId}`,
+              );
+              const baseInput = document.getElementById(`input_${baseId}`);
+              if (baseCheckbox && baseInput) {
+                baseCheckbox.checked = mesData.bases[baseId].seleccionado;
+                baseInput.value = mesData.bases[baseId].valor;
+              }
+            }
+          }
+        }
+      }
+
+      // Guardar todos los datos seleccionados
+      function guardarDatos() {
+        const year = document.getElementById("yearSelect").value;
+        if (!year) {
+          alert("Por favor, seleccione un año primero");
+          return;
+        }
+
+        const datos = {};
+        const monthsData = {};
+
+        // Recorrer todos los meses visibles
+        const monthCards = document.querySelectorAll(".month-card");
+        monthCards.forEach((monthCard) => {
+          const mesId = monthCard.id.replace("month_", "");
+          const monthCheckbox = document.getElementById(`checkbox_${mesId}`);
+          const mesSeleccionado = monthCheckbox ? monthCheckbox.checked : false;
+
+          if (mesSeleccionado) {
+            const basesData = {};
+            const baseCheckboxes = monthCard.querySelectorAll(".base-checkbox");
+            const baseInputs = monthCard.querySelectorAll(".base-input");
+
+            baseCheckboxes.forEach((checkbox, index) => {
+              const baseId = checkbox.id.replace("checkbox_", "");
+              const input = baseInputs[index];
+              const valor = input ? input.value : "";
+
+              if (checkbox.checked || (valor && valor !== "")) {
+                basesData[baseId] = {
+                  seleccionado: checkbox.checked || (valor && valor !== ""),
+                  valor: valor,
+                };
+              }
+            });
+
+            if (Object.keys(basesData).length > 0) {
+              monthsData[mesId] = {
+                seleccionado: true,
+                bases: basesData,
+              };
+            }
+          }
+        });
+
+        datos[year] = monthsData;
+        datosSeleccionados = { ...datosSeleccionados, ...datos };
+
+        // Mostrar vista previa
+        mostrarVistaPrevia(datosSeleccionados);
+
+        console.log("Datos guardados:", datosSeleccionados);
+        alert("Datos guardados correctamente");
+
+        // Aquí puedes enviar los datos a Django mediante AJAX
+        enviarADjango(datosSeleccionados);
+      }
+
+      // Mostrar vista previa de los datos guardados
+      function mostrarVistaPrevia(datos) {
+        const previewDiv = document.getElementById("dataPreview");
+        previewDiv.innerHTML = "<h3>Datos Guardados:</h3>";
+        previewDiv.style.display = "block";
+
+        const pre = document.createElement("pre");
+        pre.style.background = "white";
+        pre.style.padding = "10px";
+        pre.style.borderRadius = "5px";
+        pre.style.overflow = "auto";
+        pre.textContent = JSON.stringify(datos, null, 2);
+        previewDiv.appendChild(pre);
+      }
+
+      // Enviar datos a Django mediante AJAX
+      function enviarADjango(datos) {
+        // Ejemplo de envío a Django
+        fetch("/guardar-datos/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"), // Para CSRF de Django
+          },
+          body: JSON.stringify(datos),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Respuesta del servidor:", data);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      }
+
+      // Función para obtener CSRF token de Django
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          const cookies = document.cookie.split(";");
+          for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === name + "=") {
+              cookieValue = decodeURIComponent(
+                cookie.substring(name.length + 1),
+              );
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+
+      // Event listeners
+      document.getElementById("yearSelect").addEventListener("change", (e) => {
+        cargarMeses(e.target.value);
+      });
+
+      // Inicializar eventos
+      inicializarEventosBases();
+    </script>
+  </body>
+</html>

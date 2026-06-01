@@ -16,10 +16,16 @@ urlpatterns = [
     path('bienes_ci/', views.bienes_ci, name='bienes_ci'),
     path('add_bien_ci/', views.add_bien_ci, name='add_bien_ci'),
     path('delete_bien_ci/<int:id>/', views.delete_bien_ci, name='delete_bien_ci'),
+
+    #------------- Formatos PDF -------------#
+
     path('etiquetas_bm_pdf/', views.etiquetas_bm_pdf, name='etiquetas_bm'),
     path('etiquetas_ci_pdf/', views.etiquetas_ci_pdf, name='etiquetas_ci'),
     path('etiquetas_pd_pdf/', views.etiquetas_pd_pdf, name='etiquetas_pd'),
     path('rpu_pdf/', views.rpu_pdf, name='rpu_pdf'),
+    path('bm2_pdf/', views.bm2_pdf, name='bm2_pdf'),
+    path('transf_pdf/', views.transf_pdf, name='transf_pdf'),
+    path('prueba/', views.prueba, name='prueba'),
     
 
     #--------------Reportes Bienes-----------------------
@@ -27,8 +33,6 @@ urlpatterns = [
     path('export_bxa_excel/', export_bxa_excel.as_view(), name='export_bxa_excel'),
     path('reporte_bienes_excel/', views.reporte_bienes_excel, name='reporte_bienes_excel'),
     path('export_bienes_excel/', export_bienes_excel.as_view(), name='export_bienes_excel'),
-
-
 
 
     #--------------Listado Bienes-----------------------
