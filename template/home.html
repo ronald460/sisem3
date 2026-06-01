@@ -100,7 +100,8 @@
           </div>
         </div>
         -->
-        <!-- MÓDULO 5: Clientes 
+
+        {% if usuario_inmueble == 'admin' or usuario_inmueble == 'rguere' %}
         <div class="module-card">
           <span class="django-badge">apps.inmuebles</span>
           <div class="module-icon">
@@ -110,14 +111,15 @@
             <h3>Inmueble</h3>
             <p>Calculo de impuesto</p>
             <div class="module-meta">
-              <span class="module-badge">156 clientes</span>
-              <a href="#" class="module-link">
+              <span class="module-badge"> calculo</span>
+              <a href="/calcutations/" class="module-link">
                 Acceder <i class="bi bi-arrow-right"></i>
               </a>
             </div>
           </div>
         </div>
-        
+        {% endif %}
+        <!-- MÓDULO 5: Clientes 
         <div class="module-card">
           <span class="django-badge">apps.act_econ</span>
           <div class="module-icon">

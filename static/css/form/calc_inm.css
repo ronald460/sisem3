@@ -1,0 +1,71 @@
+.container {
+  width: 100%;
+  display: grid;
+  padding: 10px;
+  grid-template-columns: 1fr 1.2fr 0.8fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr;
+  gap: 8px 8px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "sap cast cast cast"
+    "period period period period"
+    "sector sector m_sect m_sect"
+    "typo_1 typo_1 m_typo_1 m_typo_1"
+    "typo_2 typo_2 m_typo_2 m_typo_2"
+    "generar generar cancelar cancelar";
+}
+
+form {
+  width: 100%;
+}
+
+.sap {
+  grid-area: sap;
+}
+
+.cast {
+  grid-area: cast;
+}
+
+.period {
+  grid-area: period;
+}
+
+.sector {
+  grid-area: sector;
+}
+
+.m_sect {
+  grid-area: m_sect;
+}
+
+.typo_1 {
+  grid-area: typo_1;
+}
+
+.m_typo_1 {
+  grid-area: m_typo_1;
+}
+
+.typo_2 {
+  grid-area: typo_2;
+}
+
+.m_typo_2 {
+  grid-area: m_typo_2;
+}
+
+.generar {
+  grid-area: generar;
+}
+
+.cancelar {
+  grid-area: cancelar;
+}
+
+.title {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

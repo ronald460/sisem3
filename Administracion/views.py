@@ -97,6 +97,8 @@ def Home(request):
 
     user = request.user
 
+    usuario_inmueble = user.username
+
     tasas = obtener_tasas_api()
     
     context = {
@@ -106,6 +108,7 @@ def Home(request):
         'dolar': tasas.get('dolar', 'No disponible'),
         'user': user,
         'reporte': reporte,
+        'usuario_inmueble': usuario_inmueble,
     }
     return render(request, 'home.html', context)
 

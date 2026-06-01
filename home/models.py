@@ -9,7 +9,7 @@ class euro(models.Model):
     valor = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
-        return self.valor
+        return str(self.id)
     
     class Meta:
         verbose_name = 'Euro'

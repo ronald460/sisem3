@@ -1,0 +1,80 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Remisiones</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/form/remi_inm.css' %}" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    {% if user.is_authenticated == 0 %}
+    <meta http-equiv="refresh" content="0;url={% url 'login' %}" />
+    {% endif %} {% if messages%} {% for m in messages %}
+    <script>
+      Swal.fire({
+        title: "Felicidades",
+        text: "{{m}}",
+        icon: "success",
+      });
+    </script>
+    {% endfor %} {% endif %} {% include 'header.html' %}
+    <h1 class="title">Registrar Remision</h1>
+    <form action="" method="post">
+      {% csrf_token %}
+
+      <div class="parent">
+        <div class="div1">
+          <h6>N° Resolución</h6>
+          {{ form.nriu}}
+        </div>
+        <div class="div2">
+          <h6>Código de Castastro</h6>
+          {{ form.cod_cast}}
+        </div>
+        <div class="div3">
+          <h6>Cedula o Rif</h6>
+          {{ form.document}}
+        </div>
+        <div class="div4">
+          <h6>Nombre</h6>
+          {{ form.name}}
+        </div>
+        <div class="div5">
+          <h6>Direccion</h6>
+          {{ form.direction}}
+        </div>
+        <div class="div6">
+          <h6>Periodo</h6>
+          {{ form.period}}
+        </div>
+        <div class="div9">
+          <h6>Fecha de Resolución</h6>
+          {{ form.date}}
+        </div>
+        <div class="div10">
+          <h6>Telefono</h6>
+          {{ form.phone}}
+        </div>
+        <div class="div11">
+          <button type="submit" class="btn">Registrar</button>
+        </div>
+        <div class="div13">
+          <a href="{% url 'list_solic_remi' %}" class="btn">Volver</a>
+        </div>
+      </div>
+    </form>
+  </body>
+</html>
