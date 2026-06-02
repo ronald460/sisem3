@@ -4,3 +4,4 @@ from .models import *
 
 
 admin.site.register(tasas_interes)
+admin.site.register(solic_remi)

@@ -204,4 +204,4 @@ class otros_bienes_ci(models.Model):
         ordering = ['-id']
 
     def __str__(self):
-        return f"Otro Bien #{self.id} - ({self.description})"
+        return f" #{self.bm} - ({self.description})"

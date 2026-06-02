@@ -6,7 +6,7 @@ from .models import *
 class solic_remi_form(forms.ModelForm):
     class Meta:
         model = solic_remi
-        fields = ['nriu', 'cod_cast', 'name', 'document', 'direction', 'phone', 'period', 'date']
+        fields = ['nriu', 'cod_cast', 'name', 'document', 'direction', 'phone', 'period', 'period_desc', 'date']
 
         widgets = {
             'nriu': forms.TextInput(attrs={'class': 'form-control'}),
@@ -16,5 +16,6 @@ class solic_remi_form(forms.ModelForm):
             'direction': forms.TextInput(attrs={'class': 'form-control'}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'period': forms.TextInput(attrs={'class': 'form-control'}),
-            'date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'period_desc': forms.TextInput(attrs={'class': 'form-control'}),
+            'date': forms.DateTimeInput(format='%d %m %Y', attrs={'class': 'form-control', 'type':'date'}),
         }

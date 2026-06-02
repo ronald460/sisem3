@@ -8,6 +8,7 @@ urlpatterns = [
     path('add_calcutations/', views.add_calcutations, name='add_calcutations'),
     path('solic_remi/', views.solic_remi_h, name='solic_remi'),
     path('add_solic_remi/', views.add_solic_remi, name='add_solic_remi'),
+    path('edit_solic_remi/<int:id>/', views.edit_solic_remi, name='edit_solic_remi'),
 
 
     #-------------PDF-----------------------

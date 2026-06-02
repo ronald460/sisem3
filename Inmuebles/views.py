@@ -165,6 +165,30 @@ def add_solic_remi(request):
     return render(request, 'inmueble/add_solic_remi.html', {'form': form})
 
 
+def edit_solic_remi(request, id):
+
+    remi = get_object_or_404(solic_remi, id = id)
+
+    if request.method == 'POST':
+
+        form = solic_remi_form(request.POST, instance=remi)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Remision actualizada correctamente")
+            return redirect('solic_remi')
+        
+        else:
+            messages.error(request, "Error al actualizar la remision")
+
+    context = {
+        'form': solic_remi_form(instance=remi)
+    }
+
+
+    return render(request, 'inmueble/edit_solic_remi.html', context)
+
+
 # Función para generar el PDF 
 
 
@@ -224,7 +248,6 @@ def generar_pdf_impuestos(resultados, cod_sap="", cod_cast=""):
         p.drawRightString(490, y_position, mult)
         p.drawRightString(555, y_position, total)
 
-        total_a_pagar += total
         
         y_position -= 20
         
@@ -253,7 +276,7 @@ def generar_pdf_impuestos(resultados, cod_sap="", cod_cast=""):
             p.rect(35, y_position - 10, 530, 20)
             p.setFont("Times-Bold", 10)
             p.drawString(45, y_position + 4, "TOTAL A PAGAR")
-            p.drawRightString(555, y_position + 4, total_a_pagar)
+            #p.drawRightString(555, y_position + 4, total_a_pagar)
 
 
     p.showPage()
@@ -275,6 +298,7 @@ def remision_pdf(request, id):
     direction = datos_remi.direction
     date = datos_remi.date.strftime('%Y-%m-%d')
     period = datos_remi.period
+    period_desc = datos_remi.period_desc
     funcionario = datos_remi.user.username
 
     user = User.objects.get(username = funcionario)
@@ -546,7 +570,7 @@ def remision_pdf(request, id):
 
     prf14 = '<b>ARTÍCULO 1:</b> Declarar <b>CON LUGAR</b> la Remisión del impuesto, Accesorios tributarios y Multas respecto del Impuesto sobre Inmuebles Urbanos causado causado y no pagado respecto a los ejercicios fiscales a la contribuyente <b>'+name.upper()+'</b>, titular de la cédula de identidas <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>.'
 
-    prf15 = '<b>ARTÍCULO 2:</b> Se ordena el pago de la parcialidad restante de la suma adeudada del impuesto, accesorios tributarios y multas, del Impuesto sobre Inmuebles Urbanos causado y no pagado por la contribuyente, respecto a los ejercicios fiscales <b>2022 hasta 2025</b>.'
+    prf15 = '<b>ARTÍCULO 2:</b> Se ordena el pago de la parcialidad restante de la suma adeudada del impuesto, accesorios tributarios y multas, del Impuesto sobre Inmuebles Urbanos causado y no pagado por la contribuyente, respecto a los ejercicios fiscales <b>'+period_desc+'</b>.'
 
     prf16 = '<b>ARTÍCULO 3:</b> Se ordena la <b><u>REMISIÓN PARCIAL</u></b>, de conformidad con los artículos 1 numeral 2 y 7 de la Ordenanza sobre Remisión de los Impuestos Municipales, Accesorios y Multas Tributarias , publicada en Gaceta Municipal Extraordinaria Nº 5203 de fecha 16  de abril de 2026 , de la siguiente manera: <br/><br/><b>1.</b> Un cien por ciento (100%) del monto del impuesto, accesorios tributarios (intereses y recargos) y multas respecto a los ejercicios fiscales 2019, 2020 y 2021; <br/><b>2.</b> Un ochenta por ciento (80%) respecto a los ejercicios fiscales 2022 y 2023, <br/><b>3.</b> Y un cincuenta por ciento (50%) respecto a los ejercicios fiscales 2024 y 2025.'
 
