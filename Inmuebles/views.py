@@ -143,7 +143,7 @@ def list_solic_remi(request):
                 'direction': c.direction,
                 'phone': c.phone,
                 'period': c.period,
-                'date': c.date.strftime('%Y-%m-%d'),
+                'date': c.date,
                 'id': c.id,
                 } for c in entity
             ]
@@ -317,10 +317,10 @@ def remision_pdf(request, id):
     my_Style=ParagraphStyle('My Para style',
         fontName='Times-Roman',
         firstLineIndent = 30,
-        fontSize=10.5,
+        fontSize=10,
         rightIndent = 15,
         borderWidth=0,
-        leading=13,
+        leading=14,
         alignment= 4,
         spaceAfter= 0,
         spaceBefore=0,
@@ -376,7 +376,7 @@ def remision_pdf(request, id):
     my_Style4=ParagraphStyle('My Para style 4',
         fontName='Times-Roman',
         firstLineIndent = 0,
-        fontSize=10.5,
+        fontSize=9.5,
         rightIndent = 15,
         borderWidth=0,
         leading=13,
@@ -492,6 +492,8 @@ def remision_pdf(request, id):
 
     prf9 = '<i><b>ARTÍCULO 6:</b> La Remisión Tributaria prevista en este Capítulo quedará condicionada a la presentación de las declaraciones y pago de la parcialidad restante de la obligación tributaria insoluta, correspondiente al Impuesto sobre Inmuebles Urbanos causado y omitido. De igual manera, se pagarán los montos por concepto de impuesto, accesorios tributarios (intereses y recargos) y multas conforme a la determinación y liquidación realizada por el Servicio Municipal de Administración Tributaria (SEMAT).</i>'
 
+    prf10 = '<i><b>ARTÍCULO 7:</b> Cumplidos los requisitos y procedimientos establecidos en esta Ordenanza, la remisión será de: <br/><b><br/>1.</b> Un cien por ciento (100%) del monto del impuesto, accesorios tributarios (intereses y recargos) y multas respecto a los ejercicios fiscales 2018, 2019, 2020 y 2021; <br/><b>2.</b> Un ochenta por ciento (80%) respecto a los ejercicios fiscales 2022 y 2023, <br/><b>3.</b> Y un cincuenta por ciento (50%) respecto a los ejercicios fiscales 2024 y 2025.</i>'
+
     pm = Paragraph(membrete, my_Style5)
     pm.wrap(600, 250)
     pm.drawOn(p, 0, 760)
@@ -502,43 +504,47 @@ def remision_pdf(request, id):
 
     pf4 = Paragraph(prf4, my_Style)
     pf4.wrap(520, 575)
-    pf4.drawOn(p, 50, 585)
+    pf4.drawOn(p, 50, 595)
 
     pc1 = Paragraph(cons1, my_Style6)
     pc1.wrap(600, 250)
-    pc1.drawOn(p, 0, 555)
+    pc1.drawOn(p, 0, 565)
 
     pf5 = Paragraph(prf5, my_Style)
     pf5.wrap(520, 575)
-    pf5.drawOn(p, 50, 475)
+    pf5.drawOn(p, 50, 485)
 
     pc2 = Paragraph(cons2, my_Style6)
     pc2.wrap(600, 250)
-    pc2.drawOn(p, 0, 440)
+    pc2.drawOn(p, 0, 460)
 
     pf6 = Paragraph(prf6, my_Style)
     pf6.wrap(520, 575)
-    pf6.drawOn(p, 50, 385)
+    pf6.drawOn(p, 50, 410)
 
     pc3 = Paragraph(cons3, my_Style6)
     pc3.wrap(600, 250)
-    pc3.drawOn(p, 0, 355)
+    pc3.drawOn(p, 0, 375)
 
     pf7 = Paragraph(prf7, my_Style)
     pf7.wrap(520, 575)
-    pf7.drawOn(p, 50, 275)
+    pf7.drawOn(p, 50, 295)
 
     pc4 = Paragraph(cons4, my_Style6)
     pc4.wrap(600, 250)
-    pc4.drawOn(p, 0, 245)
+    pc4.drawOn(p, 0, 270)
 
     pf8 = Paragraph(prf8, my_Style)
     pf8.wrap(520, 575)
-    pf8.drawOn(p, 50, 205)
+    pf8.drawOn(p, 50, 230)
 
     pf9 = Paragraph(prf9, my_Style4)
     pf9.wrap(520, 575)
-    pf9.drawOn(p, 50, 120)
+    pf9.drawOn(p, 50, 165)
+
+    pf10 = Paragraph(prf10, my_Style4)
+    pf10.wrap(520, 575)
+    pf10.drawOn(p, 50, 75)
 
     p.setFont("Times-Bold", 9.5)
 
@@ -552,7 +558,6 @@ def remision_pdf(request, id):
     p.drawImage(log, 35, 755, 110, 62)
     p.drawImage(logo, 6.2*inch, 755, 110, 62)
 
-    prf10 = '<i><b>ARTÍCULO 7:</b> Cumplidos los requisitos y procedimientos establecidos en esta Ordenanza, la remisión será de: <br/><b><br/>1.</b> Un cien por ciento (100%) del monto del impuesto, accesorios tributarios (intereses y recargos) y multas respecto a los ejercicios fiscales 2018, 2019, 2020 y 2021; <br/><b>2.</b> Un ochenta por ciento (80%) respecto a los ejercicios fiscales 2022 y 2023, <br/><b>3.</b> Y un cincuenta por ciento (50%) respecto a los ejercicios fiscales 2024 y 2025.</i>'
 
     cons5 = '<b>CONSIDERANDO 5°</b>'
 
@@ -580,87 +585,67 @@ def remision_pdf(request, id):
 
     prf16 = '<b>ARTÍCULO 3:</b> Se ordena la <b><u>REMISIÓN PARCIAL</u></b>, de conformidad con los artículos 1 numeral 2 y 7 de la Ordenanza sobre Remisión de los Impuestos Municipales, Accesorios y Multas Tributarias , publicada en Gaceta Municipal Extraordinaria Nº 5203 de fecha 16  de abril de 2026 , de la siguiente manera: <br/><br/><b>1.</b> Un cien por ciento (100%) del monto del impuesto, accesorios tributarios (intereses y recargos) y multas respecto a los ejercicios fiscales 2019, 2020 y 2021; <br/><b>2.</b> Un ochenta por ciento (80%) respecto a los ejercicios fiscales 2022 y 2023, <br/><b>3.</b> Y un cincuenta por ciento (50%) respecto a los ejercicios fiscales 2024 y 2025.'
 
-
-    pm = Paragraph(membrete, my_Style5)
-    pm.wrap(600, 250)
-    pm.drawOn(p, 0, 760)
-
-    pf10 = Paragraph(prf10, my_Style4)
-    pf10.wrap(520, 575)
-    pf10.drawOn(p, 50, 660)
-
-    pc5 = Paragraph(cons5, my_Style6)
-    pc5.wrap(600, 250)
-    pc5.drawOn(p, 0, 625)
-
-    pf11 = Paragraph(prf11, my_Style)
-    pf11.wrap(520, 575)
-    pf11.drawOn(p, 50, 555)
-
-    pc6 = Paragraph(cons6, my_Style6)
-    pc6.wrap(600, 250)
-    pc6.drawOn(p, 0, 520)
-
-    pf12 = Paragraph(prf12, my_Style)
-    pf12.wrap(520, 575)
-    pf12.drawOn(p, 50, 445)
-
-    pc7 = Paragraph(cons7, my_Style6)
-    pc7.wrap(600, 250)
-    pc7.drawOn(p, 0, 410)
-
-    pf13 = Paragraph(prf13, my_Style)
-    pf13.wrap(520, 575)
-    pf13.drawOn(p, 50, 380)
-
-    pr = Paragraph(resol, my_Style6)
-    pr.wrap(600, 250)
-    pr.drawOn(p, 0, 350)
-
-    pf14 = Paragraph(prf14, my_Style4)
-    pf14.wrap(520, 575)
-    pf14.drawOn(p, 50, 275)
-
-    pf15 = Paragraph(prf15, my_Style4)
-    pf15.wrap(520, 575)
-    pf15.drawOn(p, 50, 220)
-
-    pf16 = Paragraph(prf16, my_Style4)
-    pf16.wrap(520, 575)
-    pf16.drawOn(p, 50, 105)
-
-    p.setFont("Times-Bold", 9.5)
-    p.drawString(40, 30, 'RVOL/'+iniciales)
-    p.showPage()
-
-
-    #--------------------- CUARTA PÁGINA ---------------------
-
-    p.drawImage(log, 35, 755, 110, 62)
-    p.drawImage(logo, 6.2*inch, 755, 110, 62)
-
-
     prf17 = 'Dado, firmado y sellado en la Gerencia General del Servicio Municipal de Administración Tributaria <b>(SEMAT)</b> a los '+num2words(str(dia), lang='es')+' <b>('+dia+')</b> días del mes de '+fm+' del '+ano+'.'
 
     prf18 = '<b>ING. RUDY ORELLANA DE LANZA<br/>GERENTE GENERAL DEL SEMAT<br/>Resoluciòn Nº RRHH-100-2025 de fecha 25/08/2025<br/>Publicado en Gaceta Municipal Ordinaria Nº 593 de fecha 25/08/2025</b>'
 
 
-
     pm = Paragraph(membrete, my_Style5)
     pm.wrap(600, 250)
     pm.drawOn(p, 0, 760)
 
+
+    pc5 = Paragraph(cons5, my_Style6)
+    pc5.wrap(600, 250)
+    pc5.drawOn(p, 0, 715)
+
+    pf11 = Paragraph(prf11, my_Style)
+    pf11.wrap(520, 575)
+    pf11.drawOn(p, 50, 645)
+
+    pc6 = Paragraph(cons6, my_Style6)
+    pc6.wrap(600, 250)
+    pc6.drawOn(p, 0, 615)
+
+    pf12 = Paragraph(prf12, my_Style)
+    pf12.wrap(520, 575)
+    pf12.drawOn(p, 50, 545)
+
+    pc7 = Paragraph(cons7, my_Style6)
+    pc7.wrap(600, 250)
+    pc7.drawOn(p, 0, 510)
+
+    pf13 = Paragraph(prf13, my_Style)
+    pf13.wrap(520, 575)
+    pf13.drawOn(p, 50, 490)
+
+    pr = Paragraph(resol, my_Style6)
+    pr.wrap(600, 250)
+    pr.drawOn(p, 0, 455)
+
+    pf14 = Paragraph(prf14, my_Style4)
+    pf14.wrap(520, 575)
+    pf14.drawOn(p, 50, 385)
+
+    pf15 = Paragraph(prf15, my_Style4)
+    pf15.wrap(520, 575)
+    pf15.drawOn(p, 50, 348)
+
+    pf16 = Paragraph(prf16, my_Style4)
+    pf16.wrap(520, 575)
+    pf16.drawOn(p, 50, 235)
+
     p2 = Paragraph(prf18, my_Style2)
     p2.wrap(520, 200)
-    p2.drawOn(p, 50, 540)
+    p2.drawOn(p, 50, 75)
 
     pf17 = Paragraph(prf17, my_Style4)
     pf17.wrap(520, 575)
-    pf17.drawOn(p, 50, 705)
+    pf17.drawOn(p, 50, 200)
 
     p.setFont("Times-Bold", 9.5)
     p.drawString(40, 30, 'RVOL/'+iniciales)
-
+    p.showPage()
 
     p.save()
 
