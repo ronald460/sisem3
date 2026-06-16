@@ -482,7 +482,7 @@ def remision_pdf(request, id):
 
         prf5+='el contribuyente <b>'+name.upper()+'</b>, inscrito en el Registro de Informacion Fiscal (RIF) <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto '
 
-    else: 
+    elif document.startswith('v') or document.startswith('V'): 
 
         prf5+='el cuidadano <b>'+name.upper()+'</b>, titular de la cédula de identidas <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
 
