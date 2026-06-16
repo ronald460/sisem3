@@ -480,19 +480,19 @@ def remision_pdf(request, id):
 
     if document.startswith('J-') or document.startswith('j-'):
 
-        prf5+='el contribuyente <b>'+name.upper()+'</b>, inscrito en el Registro de Informacion Fiscal (RIF) <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto '
+        prf5 += 'el contribuyente <b>'+name.upper()+'</b>, inscrito en el Registro de Informacion Fiscal (RIF) <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto '
 
     elif document.startswith('V-') or document.startswith('v-'): 
 
-        prf5+='el cuidadano <b>'+name.upper()+'</b>, titular de la cédula de identidas <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
+        prf5 += 'el cuidadano <b>'+name.upper()+'</b>, titular de la cédula de identidas <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
 
         if len(period) > 4:
 
-            prf5+='a los ejercicios fiscales <b>'+period.lower()+'</b>'
+            prf5 += 'a los ejercicios fiscales <b>'+period.lower()+'</b>'
 
         elif len(period) == 4:
 
-            prf5+= 'al ejercicio fiscal <b>'+period.lower()+'</b>'
+            prf5 += 'al ejercicio fiscal <b>'+period.lower()+'</b>'
 
     cons2 = '<b>CONSIDERANDO 2°</b>'
 
