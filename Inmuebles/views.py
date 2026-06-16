@@ -591,7 +591,7 @@ def remision_pdf(request, id):
 
     
 
-    prf14 = '<b>ARTÍCULO 1:</b> Declarar <b>CON LUGAR</b> la Remisión del impuesto, Accesorios tributarios y Multas respecto del Impuesto sobre Inmuebles Urbanos causado causado y no pagado respecto a los ejercicios fiscales a la contribuyente <b>'+name.upper()+'</b>, titular de la cédula de identidas <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>.'
+    prf14 = '<b>ARTÍCULO 1:</b> Declarar <b>CON LUGAR</b> la Remisión del impuesto, Accesorios tributarios y Multas respecto del Impuesto sobre Inmuebles Urbanos causado causado y no pagado respecto a los ejercicios fiscales a la contribuyente <b>'+name.upper()+'</b>, '
 
     if document.startswith('j-') or document.startswith('J-'):
 
