@@ -1,4 +1,5 @@
 from django.db import models
+from Administracion.models import Empleado
 
 # Create your models here.
 
@@ -45,3 +46,27 @@ class Reporte(models.Model):
         verbose_name = 'Reporte'
         verbose_name_plural = 'Reportes'
         db_table = 'reporte'
+
+
+class act_confidentiality(models.Model):
+    id = models.AutoField(primary_key=True)
+    employee = models.ForeignKey(Empleado, on_delete=models.CASCADE)
+    date = models.DateField()
+    type_system = (
+        ('sigat', 'SIGAT'),
+        ('sigep-r', 'SIGEP-RENTAS'),
+        ('sigep-a', 'SIGEP-ADMINISTRATIVO'),
+        ('sisem', 'SISEM'),
+    )
+    system = models.CharField(max_length=50, choices=type_system, default='siagt')
+    observations = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.id)
+    
+    class Meta:
+        verbose_name = 'act_confidentiality'
+        verbose_name_plural = 'act_confidentialitys'
+        db_table = 'act_confidentiality'

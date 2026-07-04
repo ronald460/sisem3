@@ -1,0 +1,137 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registro de Acta</title>
+    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/form/act_conf.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <!-- Redirección si no está autenticado -->
+    {% if not user.is_authenticated %}
+    <meta http-equiv="refresh" content="0;url={% url 'login' %}" />
+    {% endif %}
+
+    <!-- Mensajes con SweetAlert2 -->
+    {% if messages %} {% for m in messages %}
+    <script>
+      Swal.fire({
+        title: "¡Éxito!",
+        text: "{{ m }}",
+        icon: "success",
+        confirmButtonColor: "#2a7de1",
+        confirmButtonText: "Aceptar",
+      });
+    </script>
+    {% endfor %} {% endif %}
+
+    <!-- Header -->
+    {% include 'header.html' %}
+
+    <!-- Contenido principal -->
+    <div class="container-main">
+      <h1 class="title">
+        <i
+          class="bi bi-file-earmark-text"
+          style="margin-right: 12px; color: #2a7de1"
+        ></i>
+        Registrar Acta
+      </h1>
+
+      <!-- Búsqueda -->
+      <div class="search-card">
+        <form action="" method="get">
+          <div class="search-row">
+            <div class="search-input-group">
+              <label for="cedula">
+                <i class="bi bi-person-vcard"></i> Cédula
+              </label>
+              <input
+                type="search"
+                placeholder="V-00000000"
+                aria-label="Buscar por cédula"
+                id="cedula"
+                name="cedula"
+                value="{{ request.GET.cedula }}"
+              />
+            </div>
+            <button class="btn-search" type="submit">
+              <i class="bi bi-search"></i> Buscar
+            </button>
+          </div>
+        </form>
+
+        <!-- Información del usuario -->
+        <div class="user-info-grid">
+          <div class="user-info-item">
+            <label><i class="bi bi-person"></i> Nombre</label>
+            <input type="text" value="{{ info.names|default:'—' }}" disabled />
+          </div>
+          <div class="user-info-item">
+            <label><i class="bi bi-person-vcard"></i> Cédula</label>
+            <input
+              type="text"
+              value="{{ info.document|default:'—' }}"
+              disabled
+            />
+          </div>
+          <div class="user-info-item">
+            <label><i class="bi bi-briefcase"></i> Cargo</label>
+            <input
+              type="text"
+              value="{{ info.position|default:'—' }}"
+              disabled
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario de acta -->
+      <div class="form-card">
+        <form action="" method="post">
+          {% csrf_token %}
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="id_date"><i class="bi bi-calendar3"></i> Fecha</label>
+              {{ form.date }}
+            </div>
+            <div class="form-group">
+              <label for="id_system"
+                ><i class="bi bi-server"></i> Sistema</label
+              >
+              {{ form.system }}
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1">
+              <label for="id_observations">
+                <i class="bi bi-chat-left-text"></i> Observaciones
+              </label>
+              {{ form.observations }}
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-save">
+              <i class="bi bi-check2-circle"></i> Guardar
+            </button>
+            <button type="reset" class="btn-cancel">
+              <i class="bi bi-x-circle"></i> Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
