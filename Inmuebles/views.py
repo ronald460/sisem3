@@ -498,6 +498,12 @@ def remision_pdf(request, id):
         # Caso por defecto para otros tipos de documentos
         prf5 += 'el contribuyente <b>'+name.upper()+'</b>, con documento <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
 
+        if len(period) > 4:
+            prf5 += 'a los ejercicios fiscales <b>'+period.lower()+'</b>'
+        elif len(period) == 4:
+            prf5 += 'al ejercicio fiscal <b>'+period.lower()+'</b>'
+            # Si period no cumple ninguna condición, no se añade nada
+
     cons2 = '<b>CONSIDERANDO 2°</b>'
 
     prf6 = 'Que se verificó ante la Gerencia de Recaudación del Servicio Municipal de Administración Tributaria <b>(SEMAT)</b> que efectivamente el contribuyente no ha realizado el pago del impuesto, accesorios tributarios y multas, respecto a los ejercicios fiscales <b>'+period.lower()+'</b>, <b>tal como consta en el estado de cuenta emitido por la Gerencia de recaudación.</b>'
