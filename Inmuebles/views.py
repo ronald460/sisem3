@@ -435,6 +435,27 @@ def remision_pdf(request, id):
         borderPadding= 0,
     )
 
+    my_Style8 = getSampleStyleSheet()
+    my_Style8=ParagraphStyle('My Para style8',
+        fontName='Times-Roman',
+        firstLineIndent = 30,
+        fontSize=9,
+        rightIndent = 15,
+        borderWidth=0,
+        leading=13,
+        alignment= 4,
+        spaceAfter= 0,
+        spaceBefore=0,
+        justifyLastLine= 0,
+        underlineGap= 0,
+        spaceShrinkage= 0.05,
+        underlineOffset= -0.125,
+        stikeGap = 1,
+        strikeOffset = 0.25,
+        endDots = None,
+        borderPadding= 0,
+    )
+
     buffer = io.BytesIO()
 
     log = ImageReader('static/image/alcaldia_logo.png')
@@ -453,6 +474,7 @@ def remision_pdf(request, id):
     p.setFont("Times-Bold", 9.5)
     p.drawString(50, 710, f'{name.upper()}')
     #p.drawString(50, 695, f'{direction.upper()}')
+
 
     prf1 = 'Se le notifica que de conformidad con los artículos 171 y 172 del Decreto con Rango, Valor y Fuerza de Ley del Código Orgánico Tributario, la ciudadana <b>ING. RUDY VANESSA ORELLANA DE LANZA</b>, titular de la cédula de identidad N° <b>V-18.104.409</b>, en su carácter de Gerente  General  del  Servicio Municipal de Administración Tributaria <b>(SEMAT)</b>, según Resolución N° <b>RRHH-100-2025</b>, de fecha <b>25 de Agosto del 2025</b> y publicada en Gaceta Municipal Ordinaria Nº 593, de fecha 25/08/2025, dictó la Resolución N° <b>RIIU-'+nriu+'-2026</b> de fecha <b>'+dia+' de '+fm+' del '+ano+'</b>, en la cual se <b>Declara LA REMISIÓN PARCIAL DE LOS IMPUESTOS</b>, <b>ACCESORIOS Y MULTAS TRIBUTARIAS</b>, por concepto de impuesto, Accesorios tributarios y Multas respecto del Impuesto sobre Inmuebles Urbanos, a favor del contribuyente <b>'+name.upper()+'</b>. A los efectos legales se anexa el texto íntegro de la Resolución constante de <b>dos (02) folios</b> útiles. Igualmente se hace del conocimiento,en caso de considerar lesionados sus derechos e intereses por la presente Resolución, podrá optar entre interponer alguno de los dos recursos que se señalan a continuación. <b>a) El Recurso Jerárquico</b>, previsto en los artículos 272 y 274 del Decreto Constituyente mediante el cual se dicta el Decreto Constituyente de Reforma Parcial del Decreto con Rango, Valor y Fuerza de Ley del Código Orgánico Tributario según G.O. N° 6.507 Extraordinario de fecha 29/01/2020, el cual será decidido por el ciudadano Alcalde y deberá ser presentado por ante el Servicio Municipal de Administración Tributaria <b>(SEMAT)</b>, enla Gerencia de Asistencia al Contribuyente, ubicada en la Calle 26 entre Carreras 15 y 16, Torre David, Nivel Semi-Sótano, Barquisimeto-Estado Lara, dentro de los <b>Veinticinco (25) días</b> hábiles siguientes a la presente notificación. b) Interponer el Recurso Contencioso Tributario por ante el Tribunal Superior de lo Contencioso Tributario de la Región Centro Occidental, el cual se encuentra situado en el Tercer Piso del Palacio de Justicia (antiguo Edificio Nacional), ubicado en la Carrera 17 entre Calles 24 y 25 de esta ciudad de Barquisimeto conforme a los artículos 203, 272 al 282 el Decreto Constituyente de Reforma Parcial del Decreto con Rango, Valor y Fuerza de Ley del Código Orgánico Tributario según G.O N° 6.507 Extraordinario de fecha 29/01/2020, dentro de los <b>Veinticinco(25) días</b> hábiles siguientes a la notificación. En ambos casos los lapsos se inician con la notificación del presente acto. De igual manera se le informa que podrá <b>ejercer los mencionados recursos de forma subsidiaria</b>, es decir ejerciendo el <b>Recurso Jerárquico</b> arriba referido y señalando de forma expresa en el texto que lo contiene, que en caso que las resultas del mismo conllevasen a una expresa denegación total o parcial, o denegación tácita, usted tiene la intención de ejercer el Recurso ContenciosoTributario, todo ello a tenor de lo dispuesto en el artículo 286 parágrafo primero del Decreto Constituyente mediante el cual se dicta el Decreto Constituyente de Reforma Parcial del Decreto con Rango, Valor y Fuerza de Ley del Código Orgánico Tributario según G.O N° 6.507 Extraordinario de fecha 29/01/2020'
 
@@ -477,9 +499,17 @@ def remision_pdf(request, id):
         pdirc.wrap(530, 250)
         pdirc.drawOn(p, 50, 695)
 
-    p1 = Paragraph(prf1, my_Style)
-    p1.wrap(520, 575)
-    p1.drawOn(p, 50, 295)
+    if len(direction) > 80:
+
+        p1 = Paragraph(prf1, my_Style)
+        p1.wrap(520, 575)
+        p1.drawOn(p, 50, 285)
+
+    else:
+
+        p1 = Paragraph(prf1, my_Style)
+        p1.wrap(520, 575)
+        p1.drawOn(p, 50, 295)
 
     p2 = Paragraph(prf2, my_Style2)
     p2.wrap(520, 200)
@@ -508,7 +538,7 @@ def remision_pdf(request, id):
     doc_upper = document.upper()  # Convertir a mayúsculas una sola vez
 
     if doc_upper.startswith('J-') or doc_upper.startswith('J'):
-        prf5 += 'el contribuyente <b>'+name.upper()+'</b>, inscrito en el Registro de Informacion Fiscal (RIF) <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto '
+        prf5 += 'el contribuyente <b>'+name.upper()+'</b>, inscrito en el Registro de Informacion Fiscal (RIF) <b>'+document.upper()+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction.upper()+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto '
 
         if len(period) > 4:
             prf5 += ' a los ejercicios fiscales <b>'+period.lower()+'</b>'
@@ -517,7 +547,7 @@ def remision_pdf(request, id):
             # Si period no cumple ninguna condición, no se añade nada
 
     elif doc_upper.startswith('V-') or doc_upper.startswith('V') or doc_upper.startswith('E-') or doc_upper.startswith('E'):
-        prf5 += 'el cuidadano <b>'+name.upper()+'</b>, titular de la cédula de identidas <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
+        prf5 += 'el cuidadano <b>'+name.upper()+'</b>, titular de la cédula de identidas <b>'+document.upper()+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction.upper()+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
 
             # Ahora este if está dentro del elif, pero correctamente indentado
         if len(period) > 4:
@@ -528,7 +558,7 @@ def remision_pdf(request, id):
 
     else:
         # Caso por defecto para otros tipos de documentos
-        prf5 += 'el contribuyente <b>'+name.upper()+'</b>, con documento <b>'+document+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
+        prf5 += 'el contribuyente <b>'+name.upper()+'</b>, con documento <b>'+document.upper()+'</b> en su carácter de propietario de un inmueble ubicado en la <b>'+direction.upper()+'</b>, con código catastral N° <b>'+cod_cast+'</b>, solicitó por ante la Administración Tributaria Municipal, la remisión del impuesto, accesorios y multas tributarias, causados por la falta de pago del Impuesto Sobre Inmuebles urbanos, correspondiente a la anualidad respecto'
 
         if len(period) > 4:
             prf5 += ' a los ejercicios fiscales <b>'+period.lower()+'</b>'
@@ -568,9 +598,18 @@ def remision_pdf(request, id):
     pc1.wrap(600, 250)
     pc1.drawOn(p, 0, 565)
 
-    pf5 = Paragraph(prf5, my_Style)
-    pf5.wrap(520, 575)
-    pf5.drawOn(p, 50, 485)
+    if len(name) > 38 and len(direction) >107 :
+
+        pf5 = Paragraph(prf5, my_Style8)
+        pf5.wrap(520, 575)
+        pf5.drawOn(p, 50, 485)
+
+    else:
+
+        pf5 = Paragraph(prf5, my_Style)
+        pf5.wrap(520, 575)
+        pf5.drawOn(p, 50, 485)
+
 
     pc2 = Paragraph(cons2, my_Style6)
     pc2.wrap(600, 250)
