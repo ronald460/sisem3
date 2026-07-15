@@ -534,7 +534,7 @@ def remision_pdf(request, id):
 
     prf5 = 'Que en fecha '+dia+' de '+fm+' del '+ano+', '
 
-# Simplifica las condiciones
+
     doc_upper = document.upper()  # Convertir a mayúsculas una sola vez
 
     if doc_upper.startswith('J-') or doc_upper.startswith('J'):
@@ -598,11 +598,19 @@ def remision_pdf(request, id):
     pc1.wrap(600, 250)
     pc1.drawOn(p, 0, 565)
 
-    if len(name) > 38 and len(direction) >107 :
+    if len(name) > 38 and len(direction) >107:
 
-        pf5 = Paragraph(prf5, my_Style8)
-        pf5.wrap(520, 575)
-        pf5.drawOn(p, 50, 485)
+        if len(direction) >=120:
+
+            pf5 = Paragraph(prf5, my_Style8)
+            pf5.wrap(520, 575)
+            pf5.drawOn(p, 50, 475) 
+
+        else: 
+
+            pf5 = Paragraph(prf5, my_Style8)
+            pf5.wrap(520, 575)
+            pf5.drawOn(p, 50, 485)
 
     else:
 
