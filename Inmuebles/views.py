@@ -598,13 +598,13 @@ def remision_pdf(request, id):
     pc1.wrap(600, 250)
     pc1.drawOn(p, 0, 565)
 
-    if len(name) > 38 and len(direction) >107:
+    if len(name) > 25 and len(direction) >107:
 
         if len(direction) >=120:
 
             pf5 = Paragraph(prf5, my_Style8)
             pf5.wrap(520, 575)
-            pf5.drawOn(p, 50, 475) 
+            pf5.drawOn(p, 50, 480) 
 
         else: 
 
