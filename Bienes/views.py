@@ -222,11 +222,14 @@ def lista_bienes_det(request):
 
 def editar_asignacion(request, id):
     asignacion = get_object_or_404(Bienes_persona, id=id)
+
+    bien = asignacion.id_bien
     
     if request.method == 'POST':
         form = addBien_form(request.POST, instance=asignacion)
         
         if form.is_valid():
+            form.instance.bm_worker = bien.bm
             form.save()
             messages.success(request, "Asignación actualizada correctamente")
             return redirect('bienes')
@@ -448,6 +451,38 @@ def add_bien_pd(request):
     }
 
     return render(request, 'bienes/add_bien_pd.html', context)
+
+def editar_bien_pd(request, id):
+    asignacion = get_object_or_404(otros_bienes_pd, id=id)
+    bm_original = asignacion.bm  # Guardas el valor original
+    area = asignacion.area
+    worker = asignacion.id_worker
+    
+    if request.method == 'POST':
+        form = OtroBienPd_form_2(request.POST, instance=asignacion)
+        
+        if form.is_valid():
+            instancia = form.save(commit=False)
+            instancia.bm = bm_original  
+            instancia.area = area
+            instancia.id_worker = worker
+
+            instancia.save()
+            messages.success(request, "Bien actualizado correctamente")
+            return redirect('bienes')
+        else:
+            messages.error(request, "Error al actualizar el bien")
+    else:
+        form = OtroBienPd_form(instance=asignacion)
+    
+    context = {
+        'form': form,
+        'bm': bm_original,
+        'area': area,
+        'asignacion': asignacion,
+    }
+    
+    return render(request, 'bienes/edit_pd.html', context)
 
 def delete_bien_pd(request, id):
     try:

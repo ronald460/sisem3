@@ -31,7 +31,7 @@ class OtroBienPd_form(forms.ModelForm):
         widgets = {
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'serial': forms.TextInput(attrs={'class': 'form-control'}),
-            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true' 'required'}),
+            'id_worker': forms.Select(attrs={'class': 'form-select', 'data-live-search': 'true', 'required': 'required'}),
             'area': forms.Select(attrs={'class': 'form-select'}),
             'observation': forms.TextInput(attrs={'class': 'form-control'}),
          }
@@ -55,5 +55,20 @@ class OtroBienCi_form(forms.ModelForm):
             'observation': forms.TextInput(attrs={'class': 'form-control'}),
          }
         
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class OtroBienPd_form_2(forms.ModelForm):
+
+    class Meta:
+        model = otros_bienes_pd
+        fields = ['description', 'serial', 'observation']  # Quita 'id_worker' y 'area'
+        widgets = {
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'serial': forms.TextInput(attrs={'class': 'form-control'}),
+            'observation': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
